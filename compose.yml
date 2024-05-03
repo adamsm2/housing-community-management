@@ -1,0 +1,56 @@
+services:
+  frontend:
+    build: frontend
+    ports:
+      - '5173:5173'
+    networks:
+      - network
+    depends_on:
+      backend:
+        condition: service_healthy
+    volumes:
+      - ./frontend/src:/app/src
+
+  backend:
+    build: backend
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+    ports:
+      - 8080:8080
+    networks:
+      - network
+    healthcheck:
+      test: wget -qO- http://localhost:8080/actuator/health | grep '"status":"UP"' || exit 1
+      interval: 10s
+      timeout: 2s
+      retries: 10
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: postgres:latest
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=hcm-app
+    volumes:
+      - db:/var/lib/postgresql/data
+    ports:
+      - '5432:5432'
+    networks:
+      - network
+    healthcheck:
+      test: pg_isready -U postgres
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+networks:
+  network:
+    driver: bridge
+
+volumes:
+  db:
+    driver: local
