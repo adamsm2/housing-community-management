@@ -10,3 +10,5 @@ spring:
   devtools:
     restart:
       enabled: true
+pepper:
+  value: XYZ

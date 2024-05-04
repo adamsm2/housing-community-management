@@ -15,6 +15,10 @@ services:
     build: backend
     environment:
       - SPRING_PROFILES_ACTIVE=dev
+      - PEPPER=XYZ
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - DATASOURCE_URL=jdbc:postgresql://db:5432/hcm-app
     ports:
       - 8080:8080
     networks:
