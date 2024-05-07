@@ -1,3 +1,11 @@
 spring:
   datasource:
     url: jdbc:tc:postgresql:latest:///test
+
+app:
+  jwt:
+    secret: NDJqODkyazk1a2RrYXNkbDMxMmxlbGFzZWZvbTNyazMwcg==
+    access-expiration: 30000
+    refresh-expiration: 3600000
+  pepper:
+    value: XYZ

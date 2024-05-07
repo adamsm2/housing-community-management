@@ -6,9 +6,15 @@ spring:
   jpa:
     open-in-view: false
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: update
   devtools:
     restart:
       enabled: true
-pepper:
-  value: XYZ
+
+app:
+  jwt:
+    secret: 42j892k95kdkasdl312lelasefom3rk30r
+    access-expiration: 300000
+    refresh-expiration: 3600000
+  pepper:
+    value: XYZ
