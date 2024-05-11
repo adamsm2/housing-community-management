@@ -4,7 +4,7 @@ import lombok.Builder;
 
 @Builder
 public record TokenResource(
-        String accessToken,
-        String refreshToken
+        TokenDetailsResource accessToken,
+        TokenDetailsResource refreshToken
 ) {
 }

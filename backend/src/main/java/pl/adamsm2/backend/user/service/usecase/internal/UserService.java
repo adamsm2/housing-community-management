@@ -15,10 +15,7 @@ import pl.adamsm2.backend.user.domain.RefreshToken;
 import pl.adamsm2.backend.user.domain.User;
 import pl.adamsm2.backend.user.domain.repository.RefreshTokenRepository;
 import pl.adamsm2.backend.user.domain.repository.UserRepository;
-import pl.adamsm2.backend.user.dto.LoginUserRequest;
-import pl.adamsm2.backend.user.dto.RegisterUserRequest;
-import pl.adamsm2.backend.user.dto.TokenResource;
-import pl.adamsm2.backend.user.dto.UserResource;
+import pl.adamsm2.backend.user.dto.*;
 import pl.adamsm2.backend.user.service.mapper.UserMapper;
 import pl.adamsm2.backend.user.service.usecase.UserUseCases;
 
@@ -54,11 +51,9 @@ class UserService implements UserUseCases {
                 .authenticate(new UsernamePasswordAuthenticationToken(loginUserRequest.email(), loginUserRequest.password() + securityProperties.getPepper()));
         SecurityContextHolder.getContext().setAuthentication(authentication);
         User user = (User) authentication.getPrincipal();
-        String accessToken = jwtUtils.createJwt(user, securityProperties.getJwtSecret(), securityProperties.getAccessTokenExpiration());
-        String refreshToken = jwtUtils.createJwt(user, securityProperties.getJwtSecret(), securityProperties.getRefreshTokenExpiration());
-
-        saveRefreshToken(user, refreshToken);
-        return new TokenResource(accessToken, refreshToken);
+        TokenResource tokenResource = getTokenResource(user);
+        saveRefreshToken(user, tokenResource.refreshToken().token());
+        return tokenResource;
     }
 
     @Override
@@ -70,21 +65,41 @@ class UserService implements UserUseCases {
 
     }
 
+    @Override
+    public TokenResource refreshToken(String refreshToken) {
+        User user = refreshTokenRepository.findByToken(refreshToken).orElseThrow().getUser();
+        TokenResource tokenResource = getTokenResource(user);
+        saveRefreshToken(user, tokenResource.refreshToken().token());
+        return tokenResource;
+    }
+
     private void validateUserDoesntExist(String email) {
         if (userRepository.existsByEmail(email)) {
             throw new IllegalStateException("User with email " + email + " already exists");
         }
     }
 
-    private void saveRefreshToken(User user, String jwt) {
+    private void saveRefreshToken(User user, String token) {
         RefreshToken refreshToken = RefreshToken.builder()
                 .user(user)
-                .token(jwt)
+                .token(token)
                 .expiryDate(Instant.now().plusMillis(securityProperties.getRefreshTokenExpiration()))
                 .build();
         refreshTokenRepository.findByUser(user).ifPresent(refreshTokenRepository::delete);
         refreshTokenRepository.flush();
         refreshTokenRepository.save(refreshToken);
+    }
+
+    private TokenResource getTokenResource(User user) {
+        long accessTokenExpiration = securityProperties.getAccessTokenExpiration();
+        long refreshTokenExpiration = securityProperties.getRefreshTokenExpiration();
+        String jwtSecret = securityProperties.getJwtSecret();
+        String accessToken = jwtUtils.createJwt(user, jwtSecret, accessTokenExpiration);
+        String refreshToken = jwtUtils.createJwt(user, jwtSecret, refreshTokenExpiration);
+        return TokenResource.builder()
+                .accessToken(new TokenDetailsResource(accessToken, accessTokenExpiration))
+                .refreshToken(new TokenDetailsResource(refreshToken, refreshTokenExpiration))
+                .build();
     }
 
 }

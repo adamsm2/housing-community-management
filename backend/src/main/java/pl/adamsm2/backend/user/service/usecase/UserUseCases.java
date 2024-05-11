@@ -15,4 +15,6 @@ public interface UserUseCases {
 
     Collection<UserResource> getUsers();
 
+    TokenResource refreshToken(String refreshToken);
+
 }

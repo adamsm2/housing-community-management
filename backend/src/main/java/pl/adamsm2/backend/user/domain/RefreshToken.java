@@ -21,7 +21,7 @@ public class RefreshToken {
     private long id;
 
     @Column(nullable = false, unique = true, length = 1024)
-    String token;
+    private String token;
 
     @OneToOne
     private User user;

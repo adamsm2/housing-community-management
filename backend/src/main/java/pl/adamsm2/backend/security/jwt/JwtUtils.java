@@ -22,7 +22,6 @@ public class JwtUtils {
         SecretKey key = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
         return Jwts.builder()
                 .setSubject(username)
-                .setIssuedAt(Date.from(now))
                 .setExpiration(Date.from(now.plusMillis(expiration)))
                 .signWith(key)
                 .compact();
