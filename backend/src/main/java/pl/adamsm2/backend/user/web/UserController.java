@@ -1,5 +1,6 @@
 package pl.adamsm2.backend.user.web;
 
+import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +13,7 @@ import pl.adamsm2.backend.user.dto.*;
 import pl.adamsm2.backend.user.service.usecase.UserUseCases;
 
 import java.util.Collection;
+import java.util.concurrent.TimeUnit;
 
 @RestController
 @RequestMapping("/users")
@@ -39,7 +41,7 @@ class UserController {
     }
 
     @PostMapping("/refreshToken")
-    ResponseEntity<TokenDetailsResource> refreshToken(@CookieValue(name = "refreshToken") String refreshToken) {
+    ResponseEntity<TokenDetailsResource> refreshToken(@Parameter(hidden = true) @CookieValue(name = "refreshToken") String refreshToken) {
         return getResponseWithTokens(userUseCases.refreshToken(refreshToken));
     }
 
@@ -47,7 +49,7 @@ class UserController {
         return ResponseCookie.from("refreshToken", tokenResource.refreshToken().token())
                 .httpOnly(true)
                 .path(REFRESH_TOKEN_ENDPOINT)
-                .maxAge(tokenResource.refreshToken().expiration() / 1000)
+                .maxAge(TimeUnit.MILLISECONDS.toSeconds(tokenResource.refreshToken().expiration()))
                 .build();
     }
 
@@ -55,4 +57,5 @@ class UserController {
         ResponseCookie refreshTokenCookie = createRefreshTokenCookie(tokenResource);
         return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString()).body(tokenResource.accessToken());
     }
+
 }
