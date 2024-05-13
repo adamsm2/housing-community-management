@@ -22,7 +22,7 @@ class UserController {
 
     private final UserUseCases userUseCases;
 
-    private static final String REFRESH_TOKEN_ENDPOINT = "/users/refreshToken";
+    private static final String ENDPOINTS_USING_REFRESH_TOKEN = "/users/token/";
 
     @GetMapping
     ResponseEntity<Collection<UserResource>> getUsers() {
@@ -40,21 +40,35 @@ class UserController {
         return getResponseWithTokens(userUseCases.loginUser(loginUserRequest));
     }
 
-    @PostMapping("/refreshToken")
+    @PostMapping("/token/refreshToken")
     ResponseEntity<TokenDetailsResource> refreshToken(@Parameter(hidden = true) @CookieValue(name = "refreshToken") String refreshToken) {
         return getResponseWithTokens(userUseCases.refreshToken(refreshToken));
     }
 
-    private ResponseCookie createRefreshTokenCookie(TokenResource tokenResource) {
+    @PostMapping("/token/logout")
+    ResponseEntity<Void> logoutUser(@Parameter(hidden = true) @CookieValue(name = "refreshToken") String refreshToken) {
+        userUseCases.logoutUser(refreshToken);
+        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, getDeleteRefreshTokenCookie(refreshToken).toString()).build();
+    }
+
+    private ResponseCookie getRefreshTokenCookie(TokenResource tokenResource) {
         return ResponseCookie.from("refreshToken", tokenResource.refreshToken().token())
                 .httpOnly(true)
-                .path(REFRESH_TOKEN_ENDPOINT)
+                .path(ENDPOINTS_USING_REFRESH_TOKEN)
                 .maxAge(TimeUnit.MILLISECONDS.toSeconds(tokenResource.refreshToken().expiration()))
                 .build();
     }
 
+    private ResponseCookie getDeleteRefreshTokenCookie(String refreshToken) {
+        return ResponseCookie.from("refreshToken", refreshToken)
+                .httpOnly(true)
+                .path(ENDPOINTS_USING_REFRESH_TOKEN)
+                .maxAge(0)
+                .build();
+    }
+
     private ResponseEntity<TokenDetailsResource> getResponseWithTokens(TokenResource tokenResource) {
-        ResponseCookie refreshTokenCookie = createRefreshTokenCookie(tokenResource);
+        ResponseCookie refreshTokenCookie = getRefreshTokenCookie(tokenResource);
         return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString()).body(tokenResource.accessToken());
     }
 

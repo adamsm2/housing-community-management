@@ -17,4 +17,6 @@ public interface UserUseCases {
 
     TokenResource refreshToken(String refreshToken);
 
+    void logoutUser(String refreshToken);
+
 }

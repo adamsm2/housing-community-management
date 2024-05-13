@@ -64,11 +64,18 @@ class UserService implements UserUseCases {
     }
 
     @Override
+    @Transactional
     public TokenResource refreshToken(String refreshToken) {
         User user = refreshTokenRepository.findByToken(refreshToken).orElseThrow().getUser();
         TokenResource tokenResource = getTokenResource(user);
         saveRefreshToken(user, tokenResource.refreshToken().token());
         return tokenResource;
+    }
+
+    @Override
+    @Transactional
+    public void logoutUser(String refreshToken) {
+        refreshTokenRepository.findByToken(refreshToken).ifPresent(refreshTokenRepository::delete);
     }
 
     private void validateUserDoesntExist(String email) {
