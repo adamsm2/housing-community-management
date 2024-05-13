@@ -3,14 +3,13 @@ package pl.adamsm2.backend.user.domain;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.Instant;
-
 @Data
 @Entity
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class RefreshToken {
+@Table(name = "roles")
+public class Role {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,13 +19,7 @@ public class RefreshToken {
     @ToString.Exclude
     private long id;
 
-    @Column(nullable = false, unique = true, length = 1024)
-    private String jwt;
-
-    @OneToOne
-    private User user;
-
-    @Column(nullable = false)
-    private Instant expiryDate;
-
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, unique = true)
+    private ERole name;
 }

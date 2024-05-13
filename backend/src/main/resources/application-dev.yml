@@ -15,3 +15,6 @@ app:
     refresh-expiration: ${JWT_REFRESH_EXPIRATION}
   pepper:
     value: ${PEPPER}
+
+seeders:
+  enabled: true

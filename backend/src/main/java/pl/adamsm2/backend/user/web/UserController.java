@@ -41,26 +41,26 @@ class UserController {
     }
 
     @PostMapping("/token/refreshToken")
-    ResponseEntity<TokenDetailsResource> refreshToken(@Parameter(hidden = true) @CookieValue(name = "refreshToken") String refreshToken) {
-        return getResponseWithTokens(userUseCases.refreshToken(refreshToken));
+    ResponseEntity<TokenDetailsResource> refreshToken(@Parameter(hidden = true) @CookieValue(name = "refreshToken") String jwt) {
+        return getResponseWithTokens(userUseCases.refreshToken(jwt));
     }
 
     @PostMapping("/token/logout")
-    ResponseEntity<Void> logoutUser(@Parameter(hidden = true) @CookieValue(name = "refreshToken") String refreshToken) {
-        userUseCases.logoutUser(refreshToken);
-        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, getDeleteRefreshTokenCookie(refreshToken).toString()).build();
+    ResponseEntity<Void> logoutUser(@Parameter(hidden = true) @CookieValue(name = "refreshToken") String jwt) {
+        userUseCases.logoutUser(jwt);
+        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, getDeleteRefreshTokenCookie(jwt).toString()).build();
     }
 
     private ResponseCookie getRefreshTokenCookie(TokenResource tokenResource) {
-        return ResponseCookie.from("refreshToken", tokenResource.refreshToken().token())
+        return ResponseCookie.from("refreshToken", tokenResource.refreshToken().jwt())
                 .httpOnly(true)
                 .path(ENDPOINTS_USING_REFRESH_TOKEN)
                 .maxAge(TimeUnit.MILLISECONDS.toSeconds(tokenResource.refreshToken().expiration()))
                 .build();
     }
 
-    private ResponseCookie getDeleteRefreshTokenCookie(String refreshToken) {
-        return ResponseCookie.from("refreshToken", refreshToken)
+    private ResponseCookie getDeleteRefreshTokenCookie(String jwt) {
+        return ResponseCookie.from("refreshToken", jwt)
                 .httpOnly(true)
                 .path(ENDPOINTS_USING_REFRESH_TOKEN)
                 .maxAge(0)

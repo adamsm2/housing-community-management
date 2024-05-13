@@ -9,3 +9,6 @@ app:
     refresh-expiration: 3600000
   pepper:
     value: XYZ
+
+seeders:
+  enabled: false

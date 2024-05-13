@@ -50,7 +50,7 @@ class UserService implements UserUseCases {
                 .authenticate(new UsernamePasswordAuthenticationToken(loginUserRequest.email(), loginUserRequest.password() + securityProperties.getPepper()));
         User user = (User) authentication.getPrincipal();
         TokenResource tokenResource = getTokenResource(user);
-        saveRefreshToken(user, tokenResource.refreshToken().token());
+        saveRefreshToken(user, tokenResource.refreshToken().jwt());
         return tokenResource;
     }
 
@@ -65,17 +65,18 @@ class UserService implements UserUseCases {
 
     @Override
     @Transactional
-    public TokenResource refreshToken(String refreshToken) {
-        User user = refreshTokenRepository.findByToken(refreshToken).orElseThrow().getUser();
+    public TokenResource refreshToken(String jwt) {
+        User user = refreshTokenRepository.findByJwt(jwt).orElseThrow().getUser();
         TokenResource tokenResource = getTokenResource(user);
-        saveRefreshToken(user, tokenResource.refreshToken().token());
+        saveRefreshToken(user, tokenResource.refreshToken().jwt());
         return tokenResource;
     }
 
     @Override
     @Transactional
-    public void logoutUser(String refreshToken) {
-        refreshTokenRepository.findByToken(refreshToken).ifPresent(refreshTokenRepository::delete);
+    public void logoutUser(String jwt) {
+        final RefreshToken refreshToken = refreshTokenRepository.findByJwt(jwt).orElseThrow();
+        refreshTokenRepository.delete(refreshToken);
     }
 
     private void validateUserDoesntExist(String email) {
@@ -84,10 +85,10 @@ class UserService implements UserUseCases {
         }
     }
 
-    private void saveRefreshToken(User user, String token) {
+    private void saveRefreshToken(User user, String jwt) {
         RefreshToken refreshToken = RefreshToken.builder()
                 .user(user)
-                .token(token)
+                .jwt(jwt)
                 .expiryDate(Instant.now().plusMillis(securityProperties.getRefreshTokenExpiration()))
                 .build();
         refreshTokenRepository.findByUser(user).ifPresent(refreshTokenRepository::delete);

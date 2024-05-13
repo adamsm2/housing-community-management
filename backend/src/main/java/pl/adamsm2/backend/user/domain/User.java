@@ -3,10 +3,12 @@ package pl.adamsm2.backend.user.domain;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Set;
+import java.util.List;
 
 @Data
 @Entity
@@ -32,9 +34,14 @@ public class User implements UserDetails {
     @ToString.Exclude
     private String password;
 
+    @ManyToOne
+    private Role role;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Set.of();
+        List<GrantedAuthority> authorities = new ArrayList<>();
+        authorities.add(new SimpleGrantedAuthority(role.getName().name()));
+        return authorities;
     }
 
     @Override

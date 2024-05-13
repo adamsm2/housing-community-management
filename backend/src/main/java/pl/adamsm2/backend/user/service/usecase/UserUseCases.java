@@ -15,8 +15,8 @@ public interface UserUseCases {
 
     Collection<UserResource> getUsers();
 
-    TokenResource refreshToken(String refreshToken);
+    TokenResource refreshToken(String jwt);
 
-    void logoutUser(String refreshToken);
+    void logoutUser(String jwt);
 
 }
