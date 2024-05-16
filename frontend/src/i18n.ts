@@ -4,7 +4,7 @@ import { initReactI18next } from "react-i18next";
 import translations from "./locale/translations";
 
 i18n.use(initReactI18next).init({
-  lng: "pl",
+  lng: localStorage.getItem("language") ?? "pl",
   fallbackLng: "pl",
   interpolation: {
     escapeValue: false,

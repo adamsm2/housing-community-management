@@ -7,11 +7,28 @@ import polish from "../assets/polish-flag.png";
 
 const SelectLanguage = () => {
   const { i18n } = useTranslation();
-  const [selectedLanguage, setSelectedLanguage] = useState(POLISH);
+
+  const getLanguageFromCode = (code: string): Language => {
+    switch (code) {
+      case "pl":
+        return POLISH;
+      case "en":
+        return ENGLISH;
+      default:
+        return POLISH;
+    }
+  };
+
+  const [selectedLanguage, setSelectedLanguage] = useState(
+    getLanguageFromCode(localStorage.getItem("language") ?? "pl"),
+  );
+
 
   const handleLanguageSelect = (language: Language) => {
-    i18n.changeLanguage(language.code);
-    setSelectedLanguage(language);
+    localStorage.setItem("language", language.code);
+    i18n.changeLanguage(language.code)
+      .then(() => setSelectedLanguage(language))
+      .catch((error) => console.error(error));
   };
 
   return (
