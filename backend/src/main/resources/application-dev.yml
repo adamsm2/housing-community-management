@@ -13,6 +13,8 @@ app:
     secret: ${JWT_SECRET}
     access-expiration: ${JWT_EXPIRATION}
     refresh-expiration: ${JWT_REFRESH_EXPIRATION}
+  cors:
+    allowed-origins: ${CORS_ALLOWED_ORIGINS}
   pepper:
     value: ${PEPPER}
 

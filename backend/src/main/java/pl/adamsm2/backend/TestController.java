@@ -12,4 +12,10 @@ public class TestController {
     public String test() {
         return "Test6!";
     }
+
+    @GetMapping("/frontend")
+    public String frontendTest() {
+        return "Frontend test!";
+    }
+
 }

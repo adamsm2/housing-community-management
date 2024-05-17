@@ -19,6 +19,7 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
       - DATASOURCE_URL=jdbc:postgresql://db:5432/hcm-app
+      - CORS_ALLOWED_ORIGINS=http://localhost:5173,https://localhost:5173
     ports:
       - 8080:8080
     networks:

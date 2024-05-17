@@ -16,6 +16,8 @@ app:
     secret: 42j892k95kdkasdl312lelasefom3rk30r
     access-expiration: 300000
     refresh-expiration: 3600000
+  cors:
+    allowed-origins: http://localhost:5173,https://localhost:5173
   pepper:
     value: XYZ
 
