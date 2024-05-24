@@ -3,6 +3,7 @@ import { useState } from "react";
 import { ENGLISH, Language, POLISH } from "../locale/languages.ts";
 import english from "../assets/english-flag.png";
 import polish from "../assets/polish-flag.png";
+import localStorageKeys from "@/localstorage-keys.ts";
 
 
 const SelectLanguage = () => {
@@ -25,7 +26,7 @@ const SelectLanguage = () => {
 
 
   const handleLanguageSelect = (language: Language) => {
-    localStorage.setItem("language", language.code);
+    localStorage.setItem(localStorageKeys.LANGUAGE, language.code);
     i18n.changeLanguage(language.code)
       .then(() => setSelectedLanguage(language))
       .catch((error) => console.error(error));

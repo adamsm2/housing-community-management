@@ -5,9 +5,12 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import UserApi from "@/api/user.ts";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { CircularProgress } from "@mui/material";
+import { useNavigate } from "react-router-dom";
+import paths from "@/router/paths.ts";
 
 const LoginUserForm = () => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState("");
   const schema = useLoginUserValidationSchema();
@@ -15,9 +18,8 @@ const LoginUserForm = () => {
   const onSubmit: SubmitHandler<LoginUserRequest> = async (data) => {
     setIsLoading(true);
     UserApi.loginUser(data)
-      .then((response) => {
-        console.log("==================================================");
-        console.log(response);
+      .then(() => {
+        navigate(paths.user.root);
       })
       .catch((error) => {
         error.response ? setMessage(t("invalidCredentials")) : setMessage(t("internalError"));

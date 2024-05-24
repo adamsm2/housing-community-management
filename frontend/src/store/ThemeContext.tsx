@@ -2,6 +2,7 @@ import { createContext, PropsWithChildren, useEffect, useMemo, useState } from "
 import { Theme } from "../themes/themes.types.ts";
 import { darkTheme, lightTheme } from "../themes/themes.ts";
 import { ThemeContextType } from "./ThemeContext.types.ts";
+import localStorageKeys from "@/localstorage-keys.ts";
 
 export const ThemeContext = createContext<ThemeContextType>({
   theme: Theme.LIGHT,
@@ -11,7 +12,7 @@ export const ThemeContext = createContext<ThemeContextType>({
 
 export const ThemeContextProvider: React.FC<PropsWithChildren> = (props) => {
   const [theme, setTheme] = useState(() => {
-    return localStorage.getItem("theme") ?? Theme.LIGHT;
+    return localStorage.getItem(localStorageKeys.THEME) ?? Theme.LIGHT;
   });
 
   const toggleTheme = () => {
@@ -31,7 +32,7 @@ export const ThemeContextProvider: React.FC<PropsWithChildren> = (props) => {
   };
 
   useEffect(() => {
-    localStorage.setItem("theme", theme);
+    localStorage.setItem(localStorageKeys.THEME, theme);
   }, [theme]);
 
   const value = useMemo(() => ({
