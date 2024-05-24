@@ -15,6 +15,7 @@ const translations = {
       passwordRequired: "Password is required",
       repeatedPasswordRequired: "Repeated password is required",
       passwordMatch: "Passwords must match",
+      invalidCredentials: "Invalid credentials",
     },
   },
   [POLISH.code]: {
@@ -31,6 +32,7 @@ const translations = {
       passwordRequired: "Hasło jest wymagane",
       repeatedPasswordRequired: "Powtórzone hasło jest wymagane",
       passwordMatch: "Hasła muszą być takie same",
+      invalidCredentials: "Nieprawidłowe dane logowania",
 
     },
   },

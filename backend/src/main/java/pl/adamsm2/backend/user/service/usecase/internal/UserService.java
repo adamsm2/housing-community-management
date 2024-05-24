@@ -10,9 +10,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.adamsm2.backend.security.SecurityProperties;
 import pl.adamsm2.backend.security.jwt.JwtUtils;
+import pl.adamsm2.backend.user.domain.ERole;
 import pl.adamsm2.backend.user.domain.RefreshToken;
+import pl.adamsm2.backend.user.domain.Role;
 import pl.adamsm2.backend.user.domain.User;
 import pl.adamsm2.backend.user.domain.repository.RefreshTokenRepository;
+import pl.adamsm2.backend.user.domain.repository.RoleRepository;
 import pl.adamsm2.backend.user.domain.repository.UserRepository;
 import pl.adamsm2.backend.user.dto.*;
 import pl.adamsm2.backend.user.service.mapper.UserMapper;
@@ -26,6 +29,7 @@ import java.util.Collection;
 class UserService implements UserUseCases {
 
     private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
     private final RefreshTokenRepository refreshTokenRepository;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
@@ -38,6 +42,7 @@ class UserService implements UserUseCases {
     public void registerUser(RegisterUserRequest registerUserRequest) {
         validateUserDoesntExist(registerUserRequest.email());
         User user = userMapper.mapRegisterUserRequestToUser(registerUserRequest);
+        setRoleForNewUser(user);
         final String encodedPassword = passwordEncoder.encode(registerUserRequest.password() + securityProperties.getPepper());
         user.setPassword(encodedPassword);
         userRepository.save(user);
@@ -106,6 +111,11 @@ class UserService implements UserUseCases {
                 .accessToken(new TokenDetailsResource(accessToken, accessTokenExpiration))
                 .refreshToken(new TokenDetailsResource(refreshToken, refreshTokenExpiration))
                 .build();
+    }
+
+    private void setRoleForNewUser(User user) {
+        final Role role = roleRepository.findByName(ERole.ROLE_USER).orElseThrow();
+        user.setRole(role);
     }
 
 }

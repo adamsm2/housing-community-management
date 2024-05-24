@@ -1,10 +1,10 @@
-import * as yup from "yup";
 import { useTranslation } from "react-i18next";
+import * as yup from "yup";
 
-const useValidationSchema = () => {
+const useUserCredentialsValidationSchema = () => {
   const { t } = useTranslation();
 
-  return yup.object({
+  return {
     email: yup
       .string()
       .email(t("validEmail"))
@@ -15,13 +15,8 @@ const useValidationSchema = () => {
       .min(8, t("minPasswordLength"))
       .max(64, t("maxPasswordLength"))
       .required(t("passwordRequired")),
-    passwordRepeated: yup
-      .string()
-      .oneOf([yup.ref("password"), ""], t("passwordMatch"))
-      .required(t("repeatedPasswordRequired")),
-  }).required();
+  };
 
 };
 
-
-export default useValidationSchema;
+export default useUserCredentialsValidationSchema;

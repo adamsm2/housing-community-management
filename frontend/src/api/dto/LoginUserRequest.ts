@@ -1,4 +1,4 @@
 interface LoginUserRequest {
-  login: string;
+  email: string;
   password: string;
 }
