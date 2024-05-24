@@ -25,5 +25,13 @@ async function logoutUser() {
   localStorage.removeItem("accessToken");
 }
 
+async function refreshToken() {
+  const response = await apiClient
+    .post(userControllerUrlWithRefreshToken + "refresh");
+  const expirationDate = new Date().getTime() + response.data.expiration;
+  localStorage.setItem("accessTokenExpirationDate", expirationDate.toString());
+  localStorage.setItem("accessToken", response.data.jwt);
+}
 
-export default { registerUser, loginUser, logoutUser };
+
+export default { registerUser, loginUser, logoutUser, refreshToken };
