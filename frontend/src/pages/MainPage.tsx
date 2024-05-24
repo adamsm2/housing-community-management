@@ -2,6 +2,7 @@ import SelectLanguage from "@/components/SelectLanguage.tsx";
 import { useTranslation } from "react-i18next";
 import SelectTheme from "@/components/SelectTheme.tsx";
 import { apiClient } from "@/api/client.ts";
+import UserApi from "@/api/user.ts";
 import RegisterUserForm from "@/components/forms/RegisterUserForm.tsx";
 import LoginUserForm from "@/components/forms/LoginUserForm.tsx";
 
@@ -33,6 +34,7 @@ const MainPage = () => {
       <button onClick={testApi}>Test</button>
       <RegisterUserForm />
       <LoginUserForm />
+      <button onClick={() => UserApi.logoutUser()}> Logout</button>
     </>
   );
 };
