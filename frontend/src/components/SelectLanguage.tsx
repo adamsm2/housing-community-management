@@ -53,19 +53,23 @@ const SelectLanguage = () => {
             sx={
               {
                 mt: "1px", "& .MuiMenu-paper":
-                  { backgroundColor: colors.primary200 },
+                  { backgroundColor: colors.primary200, boxShadow: "none", border: "none" },
               }}>
         {LANGUAGES.map((language) => {
           return (
             <MenuItem
               onClick={() => handleLanguageSelect(language)}
               key={language.code}
+              sx={{
+                color: colors.text,
+                "&:hover": { backgroundColor: "transparent", color: colors.highlight },
+              }}
             >
               <Box
                 component="img"
                 width="32px"
                 src={language.flagIcon}
-                sx={{ mr: 1, color: colors.text }}
+                sx={{ mr: 1 }}
               />
               {language.label}
             </MenuItem>

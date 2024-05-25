@@ -11,9 +11,9 @@ const SelectTheme = () => {
   return (
     <IconButton size="medium" onClick={toggleTheme} sx={{ margin: 0, padding: 0 }}>
       {theme === Theme.DARK ? (
-        <DarkModeIcon sx={{ color: colors.text }} />
+        <DarkModeIcon sx={{ color: colors.text, "&:hover": { color: colors.highlight } }} />
       ) : (
-        <LightModeIcon sx={{ color: colors.text }} />
+        <LightModeIcon sx={{ color: colors.text, "&:hover": { color: colors.highlight } }} />
       )}
     </IconButton>
   );

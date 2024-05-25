@@ -43,7 +43,7 @@ const Navbar = () => {
                     color: colors.text,
                     cursor: "pointer",
                     transition: "color 0.3s ease",
-                    "&:hover": { color: "hsl(28,88%,62%)" },
+                    "&:hover": { color: colors.highlight },
                   }}>
         HousingCommunity
       </Typography>
@@ -67,7 +67,7 @@ const Navbar = () => {
     <>
       <Box sx={{ display: "flex" }}>
         <CssBaseline />
-        <AppBar component="nav" sx={{ backgroundColor: colors.primary200 }}>
+        <AppBar component="nav" sx={{ backgroundColor: colors.primary200, boxShadow: "none" }}>
           <Toolbar>
             <IconButton
               aria-label="open drawer"
@@ -85,7 +85,7 @@ const Navbar = () => {
                           color: colors.text,
                           cursor: "pointer",
                           transition: "color 0.3s ease",
-                          "&:hover": { color: "hsl(28,88%,62%)" },
+                          "&:hover": { color: colors.highlight },
                         }}>
               HousingCommunity
             </Typography>

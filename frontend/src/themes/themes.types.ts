@@ -4,6 +4,7 @@ export interface Palette {
   secondary: string;
   background: string;
   text: string;
+  highlight: string;
 }
 
 export const Theme = {

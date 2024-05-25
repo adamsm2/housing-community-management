@@ -6,6 +6,7 @@ export const darkTheme: Palette = {
   secondary: "#020024",
   background: "#010104",
   text: "#F0F0FF",
+  highlight: "hsl(28,88%,62%)",
 };
 
 export const lightTheme: Palette = {
@@ -14,4 +15,5 @@ export const lightTheme: Palette = {
   secondary: "#DDDBFF",
   background: "#FBFBFE",
   text: "#010104",
+  highlight: "hsl(28,88%,62%)",
 };
