@@ -3,6 +3,7 @@ export interface Palette {
   primary200: string;
   secondary: string;
   background: string;
+  text: string;
 }
 
 export const Theme = {
