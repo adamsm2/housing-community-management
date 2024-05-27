@@ -1,9 +1,6 @@
 package pl.adamsm2.backend.user.service.usecase;
 
-import pl.adamsm2.backend.user.dto.LoginUserRequest;
-import pl.adamsm2.backend.user.dto.RegisterUserRequest;
-import pl.adamsm2.backend.user.dto.TokenResource;
-import pl.adamsm2.backend.user.dto.UserResource;
+import pl.adamsm2.backend.user.dto.*;
 
 import java.util.Collection;
 
@@ -14,6 +11,8 @@ public interface UserUseCases {
     TokenResource loginUser(LoginUserRequest loginUserRequest);
 
     Collection<UserResource> getUsers();
+
+    UserDataResource getCurrentUserData();
 
     TokenResource refreshToken(String jwt);
 

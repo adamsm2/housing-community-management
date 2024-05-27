@@ -29,6 +29,12 @@ public class User implements UserDetails {
     @Column(nullable = false, unique = true)
     private String email;
 
+    @EqualsAndHashCode.Exclude
+    private String firstName;
+
+    @EqualsAndHashCode.Exclude
+    private String lastName;
+
     @Column(nullable = false)
     @EqualsAndHashCode.Exclude
     @ToString.Exclude

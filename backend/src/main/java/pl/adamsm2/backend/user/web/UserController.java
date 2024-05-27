@@ -20,13 +20,17 @@ import java.util.concurrent.TimeUnit;
 @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 class UserController {
 
-    private final UserUseCases userUseCases;
-
     private static final String ENDPOINTS_USING_REFRESH_TOKEN = "/users/token/";
+    private final UserUseCases userUseCases;
 
     @GetMapping
     ResponseEntity<Collection<UserResource>> getUsers() {
         return ResponseEntity.ok(userUseCases.getUsers());
+    }
+
+    @GetMapping("/current")
+    ResponseEntity<UserDataResource> getCurrentUserData() {
+        return ResponseEntity.ok(userUseCases.getCurrentUserData());
     }
 
     @PostMapping("/register")
