@@ -5,9 +5,12 @@ import { useTranslation } from "react-i18next";
 import { yupResolver } from "@hookform/resolvers/yup";
 import useRegisterUserValidationSchema from "@/components/forms/schemas/register-user.ts";
 import { CircularProgress } from "@mui/material";
+import paths from "@/router/paths.ts";
+import { useNavigate } from "react-router-dom";
 
 const RegisterUserForm = () => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState("");
   const schema = useRegisterUserValidationSchema();
@@ -59,30 +62,34 @@ const RegisterUserForm = () => {
   return (
     <>
       {isLoading ? <div><CircularProgress /></div> :
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <div>
-            <label htmlFor="email">Email</label>
-            <input id="email" {...register("email")} />
-            {errors.email && <p>{errors.email.message}</p>}
-          </div>
-          <div>
-            <label htmlFor="password">Password</label>
-            <input id="password" type="password" {...register("password")} />
-            {errors.password && <p>{errors.password.message}</p>}
-          </div>
-          <div>
-            <label htmlFor="passwordRepeated">Password repeated</label>
-            <input id="passwordRepeated" type="password" {...register("passwordRepeated")} />
-            {errors.passwordRepeated && <p>{errors.passwordRepeated.message}</p>}
-          </div>
-          {message && <p>{message}</p>}
-          <button type="submit">Register</button>
-          <button type="button" onClick={setValues}>Set Values</button>
-          <button type="button" onClick={clearForm}>Clear Form</button>
-        </form>
+        <>
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <div>
+              <label htmlFor="email">Email</label>
+              <input id="email" {...register("email")} />
+              {errors.email && <p>{errors.email.message}</p>}
+            </div>
+            <div>
+              <label htmlFor="password">Password</label>
+              <input id="password" type="password" {...register("password")} />
+              {errors.password && <p>{errors.password.message}</p>}
+            </div>
+            <div>
+              <label htmlFor="passwordRepeated">Password repeated</label>
+              <input id="passwordRepeated" type="password" {...register("passwordRepeated")} />
+              {errors.passwordRepeated && <p>{errors.passwordRepeated.message}</p>}
+            </div>
+            {message && <p>{message}</p>}
+            <button type="submit">Register</button>
+            <button type="button" onClick={setValues}>Set Values</button>
+            <button type="button" onClick={clearForm}>Clear Form</button>
+          </form>
+          <button onClick={() => navigate(paths.auth.login)}>{t("backToLogin")}</button>
+        </>
       }
     </>
-  );
+  )
+    ;
 };
 
 export default RegisterUserForm;

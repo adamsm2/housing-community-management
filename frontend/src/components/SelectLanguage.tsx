@@ -46,7 +46,15 @@ const SelectLanguage = () => {
 
   return (
     <Box>
-      <IconButton onClick={handleClick} size="medium" sx={{ margin: 0, padding: 0 }}>
+      <IconButton onClick={handleClick} size="medium"
+                  sx={{
+                    margin: 0,
+                    padding: 0,
+                    transition: "box-shadow 0.3s ease",
+                    "&:hover": {
+                      boxShadow: colors.highlight + " 0px 30px 60px -12px inset," + colors.highlight + " 0px 18px 36px -18px inset",
+                    },
+                  }}>
         <Box component="img" width="32px" src={selectedLanguage.flagIcon} />
       </IconButton>
       <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}
@@ -62,6 +70,7 @@ const SelectLanguage = () => {
               key={language.code}
               sx={{
                 color: colors.text,
+                transition: "color 0.3s ease",
                 "&:hover": { backgroundColor: "transparent", color: colors.highlight },
               }}
             >

@@ -19,6 +19,9 @@ const translations = {
       login: "Login",
       announcements: "Announcements",
       userPanel: "User panel",
+      createNewAccount: "Create new account",
+      backToLogin: "Back to login",
+      logout: "Logout",
     },
   },
   [POLISH.code]: {
@@ -39,6 +42,9 @@ const translations = {
       login: "Zaloguj",
       announcements: "Ogłoszenia",
       userPanel: "Panel użytkownika",
+      createNewAccount: "Utwórz nowe konto",
+      backToLogin: "Powróć do logowania",
+      logout: "Wyloguj",
 
     },
   },
