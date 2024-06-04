@@ -5,11 +5,14 @@ import "./i18n";
 import { ThemeContextProvider } from "./store/ThemeContext.tsx";
 import router from "@/router/router.tsx";
 import { RouterProvider } from "react-router-dom";
+import { UserContextProvider } from "@/store/UserContext.tsx";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <ThemeContextProvider>
-      <RouterProvider router={router} />
-    </ThemeContextProvider>
+    <UserContextProvider>
+      <ThemeContextProvider>
+        <RouterProvider router={router} />
+      </ThemeContextProvider>
+    </UserContextProvider>
   </React.StrictMode>,
 );
