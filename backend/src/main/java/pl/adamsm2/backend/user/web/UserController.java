@@ -40,8 +40,10 @@ class UserController {
     }
 
     @PostMapping("/login")
-    ResponseEntity<TokenDetailsResource> loginUser(@RequestBody @Valid LoginUserRequest loginUserRequest) {
-        return getResponseWithTokens(userUseCases.loginUser(loginUserRequest));
+    ResponseEntity<LoginUserResource> loginUser(@RequestBody @Valid LoginUserRequest loginUserRequest) {
+        TokenResource tokenResource = userUseCases.loginUser(loginUserRequest);
+        UserDataResource userDataResource = userUseCases.getCurrentUserData();
+        return getLoginResponseWithTokens(tokenResource, userDataResource);
     }
 
     @PostMapping("/token/refreshToken")
@@ -74,6 +76,12 @@ class UserController {
     private ResponseEntity<TokenDetailsResource> getResponseWithTokens(TokenResource tokenResource) {
         ResponseCookie refreshTokenCookie = getRefreshTokenCookie(tokenResource);
         return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString()).body(tokenResource.accessToken());
+    }
+
+    private ResponseEntity<LoginUserResource> getLoginResponseWithTokens(TokenResource tokenResource, UserDataResource userDataResource) {
+        ResponseCookie refreshTokenCookie = getRefreshTokenCookie(tokenResource);
+        LoginUserResource loginUserResource = new LoginUserResource(tokenResource.accessToken(), userDataResource);
+        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString()).body(loginUserResource);
     }
 
 }

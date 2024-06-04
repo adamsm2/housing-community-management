@@ -54,6 +54,7 @@ class UserService implements UserUseCases {
     public TokenResource loginUser(LoginUserRequest loginUserRequest) {
         Authentication authentication = authenticationManager
                 .authenticate(new UsernamePasswordAuthenticationToken(loginUserRequest.email(), loginUserRequest.password() + securityProperties.getPepper()));
+        SecurityContextHolder.getContext().setAuthentication(authentication);
         User user = (User) authentication.getPrincipal();
         TokenResource tokenResource = getTokenResource(user);
         saveRefreshToken(user, tokenResource.refreshToken().jwt());
