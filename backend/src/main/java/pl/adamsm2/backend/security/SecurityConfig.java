@@ -68,7 +68,9 @@ public class SecurityConfig {
                                 "/test/frontend",
                                 "/v3/api-docs/**").permitAll()
                         .requestMatchers(
-                                "/users"
+                                "/users",
+                                "/apartments",
+                                "/apartments/owner"
                         ).hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
