@@ -14,6 +14,8 @@ import pl.adamsm2.backend.apartment.dto.ApartmentResource;
 import pl.adamsm2.backend.apartment.dto.ChangeApartmentOwnerRequest;
 import pl.adamsm2.backend.apartment.service.usecase.ApartmentUseCases;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/apartments")
 @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
@@ -24,6 +26,11 @@ public class ApartmentController {
     @GetMapping
     public ResponseEntity<Page<ApartmentResource>> getApartments(@PageableDefault(sort = "number", direction = Sort.Direction.ASC) Pageable pageable) {
         return ResponseEntity.ok(apartmentUseCases.getApartments(pageable));
+    }
+
+    @GetMapping("/currentUser")
+    public ResponseEntity<List<ApartmentResource>> getApartmentsForCurrentUser() {
+        return ResponseEntity.ok(apartmentUseCases.getApartmentsForCurrentUser());
     }
 
     @PostMapping("/owner")
