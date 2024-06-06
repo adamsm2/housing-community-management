@@ -70,7 +70,8 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/users",
                                 "/apartments",
-                                "/apartments/owner"
+                                "/apartments/owner",
+                                "/utilityPrices"
                         ).hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )

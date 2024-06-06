@@ -6,4 +6,6 @@ import pl.adamsm2.backend.apartment.domain.UtilityPrice;
 
 @Repository
 public interface UtilityPriceRepository extends JpaRepository<UtilityPrice, Long> {
+
+    boolean existsByMonthAndYear(int month, int year);
 }

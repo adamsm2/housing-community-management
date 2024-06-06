@@ -34,6 +34,7 @@ class ApartmentService implements ApartmentUseCases {
     }
 
     @Override
+    @Transactional
     public void changeApartmentOwner(ChangeApartmentOwnerRequest changeApartmentOwnerRequest) {
         Apartment apartment = apartmentRepository.findByNumber(changeApartmentOwnerRequest.apartmentNumber()).orElseThrow();
         User user = userRepository.findByEmail(changeApartmentOwnerRequest.newOwnerEmail()).orElseThrow();
@@ -42,6 +43,7 @@ class ApartmentService implements ApartmentUseCases {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<ApartmentResource> getApartmentsForCurrentUser() {
         User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         return apartmentRepository.findAllByOwner(currentUser)
