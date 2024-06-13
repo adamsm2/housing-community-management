@@ -1,70 +1,66 @@
 @import url("https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Montserrat:wght@400;600;700&display=swap");
 
-:root {
-    font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-    line-height: 1.5;
-    font-weight: 400;
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-    color-scheme: light dark;
-    color: rgba(255, 255, 255, 0.87);
-    background-color: #242424;
+@layer base {
+    html {
+        background-color: rgb(var(--color-bkg));
+        color: rgb(var(--color-text-title));
+    }
 
-    font-synthesis: none;
-    text-rendering: optimizeLegibility;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-}
-
-a {
-    font-weight: 500;
-    color: #646cff;
-    text-decoration: inherit;
-}
-
-a:hover {
-    color: #535bf2;
-}
-
-body {
-    margin: 0;
-    display: flex;
-    place-items: center;
-    min-width: 320px;
-    min-height: 100vh;
-}
-
-h1 {
-    font-size: 3.2em;
-    line-height: 1.1;
-}
-
-button {
-    border-radius: 8px;
-    border: 2px solid #000;
-    padding: 0.6em;
-    font-size: 1em;
-    font-weight: 500;
-    font-family: inherit;
-    background-color: #1a1a1a;
-    cursor: pointer;
-    transition: border-color 0.25s;
-}
-
-button:hover {
-    border-color: #646cff;
-}
-
-@media (prefers-color-scheme: light) {
     :root {
-        color: #213547;
-        background-color: #ffffff;
+        --color-primary: 79 70 229;
+        --color-secondary: 55 65 81;
+        --color-text-title: 249 250 251;
+        --color-text-content: 209 213 219;
+        --color-bkg: 17 24 39;
     }
 
-    a:hover {
-        color: #747bff;
+    :root[data-theme="light"] {
+        --color-primary: 79 70 229;
+        --color-secondary: 55 65 81;
+        --color-text-title: 17 24 39;
+        --color-text-content: 75 85 99;
+        --color-bkg: 255 255 255;
     }
 
-    button {
-        background-color: #f9f9f9;
+    :root[data-theme="dark"] {
+        --color-primary: 99 102 241;
+        --color-secondary: 55 65 81;
+        --color-text-title: 226 232 240;
+        --color-text-content: 148 163 184;
+        --color-bkg: 17 24 39;
+        --color-test: #fc2222 252 34 34;
+    }
+
+    @media (prefers-color-scheme: light) {
+        :root {
+            --color-primary: 79 70 229;
+            --color-secondary: 55 65 81;
+            --color-text-title: 17 24 39;
+            --color-text-content: 75 85 99;
+            --color-bkg: 255 255 255;
+        }
     }
 }
+
+
+.swiper-wrapper {
+    padding-bottom: 100px;
+}
+
+.swiper-slide img {
+    display: block;
+    border-radius: 12px;
+    width: 100%;
+    -webkit-box-reflect: below 4px linear-gradient(transparent 25%, rgba(0, 0, 0, 0.35));
+}
+
+.swiper-pagination-bullet {
+    scale: 150%;
+}
+
+
+
