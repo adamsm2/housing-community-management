@@ -12,7 +12,7 @@ import osiedla3 from "@/assets/osiedla3.png";
 import osiedla4 from "@/assets/osiedla4.png";
 import osiedla5 from "@/assets/osiedla5.jpg";
 import { useTranslation } from "react-i18next";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 
 const ImageSwiperSection = () => {
   const { t } = useTranslation();
@@ -24,9 +24,12 @@ const ImageSwiperSection = () => {
     threshold: 0.1,
   });
 
-  if (inView1) {
-    swiperRef.current?.swiper?.slideTo(2);
-  }
+  useEffect(() => {
+    if (inView1) {
+      swiperRef.current?.swiper?.slideTo(2);
+    }
+  }, [inView1]);
+
 
   return (
     <div className="mx-auto max-w-7xl px-6 lg:px-8 overflow-hidden text-center">
