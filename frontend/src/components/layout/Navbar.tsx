@@ -1,175 +1,86 @@
-import { Outlet, useNavigate } from "react-router-dom";
-import { useContext, useState } from "react";
-import { ThemeContext } from "@/store/ThemeContext.tsx";
-import {
-  AppBar,
-  Box,
-  CssBaseline,
-  Divider,
-  Drawer,
-  IconButton,
-  List,
-  ListItem,
-  Toolbar,
-  Typography,
-} from "@mui/material";
-import paths from "@/router/paths.ts";
-import MenuIcon from "@mui/icons-material/Menu";
-import { useTranslation } from "react-i18next";
-import { UserContext } from "@/store/UserContext.tsx";
-import UserApi from "@/api/user.ts";
-import SelectTheme from "@/components/SelectTheme.tsx";
-import SelectLanguage from "@/components/SelectLanguage.tsx";
+import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Bars3Icon } from "@heroicons/react/24/outline";
+import useNavbarItems from "@/hooks/useNavbarItems.ts";
+import SmallScreenMenu from "@/components/layout/SmallScreenMenu.tsx";
+import NavbarButton from "@/components/NavbarButton.tsx";
+import OptionsMenu from "@/components/layout/OptionsMenu.tsx";
 
-const drawerWidth = 240;
 
 const Navbar = () => {
-  const navigate = useNavigate();
-  const { colors } = useContext(ThemeContext);
-  const [mobileOpen, setMobileOpen] = useState(false);
-  const { t } = useTranslation();
-  const { userData, setCurrentUser } = useContext(UserContext);
-
-  const logoutUser = () => {
-    UserApi.logoutUser()
-      .then(() => {
-        setCurrentUser({ "email": "", "firstName": "", "lastName": "", "role": "" });
-        navigate(paths.auth.login);
-      });
-  };
-  const navbarItems = [
-    { name: t("announcements"), onClick: () => navigate(paths.announcements) },
-  ];
-
-  if (userData.role !== "") {
-    navbarItems.push({ name: t("userPanel"), onClick: () => navigate(paths.user.root) });
-  }
-
-  const loginLogoutItem = {
-    name: userData.role === "" ? t("login") : t("logout"),
-    onClick: userData.role === "" ? () => navigate(paths.auth.login) :
-      logoutUser,
-  };
-
-  const handleDrawerToggle = () => {
-    setMobileOpen((prevState) => !prevState);
-  };
-
-  const drawer = (
-    <Box onClick={handleDrawerToggle} sx={{ textAlign: "center" }}>
-      <Typography fontFamily={"Dancing Script, cursive"} variant="h6"
-                  sx={{
-                    color: colors.text,
-                    cursor: "pointer",
-                    transition: "color 0.3s ease",
-                    "&:hover": { color: colors.highlight },
-                  }}>
-        HousingCommunity
-      </Typography>
-      <Divider />
-      <List>
-        {navbarItems.map((item, index) => (
-          <ListItem key={index} disablePadding
-                    sx={{
-                      color: colors.text,
-                      cursor: "pointer",
-                    }}
-                    onClick={item.onClick}>
-            {item.name}
-          </ListItem>
-        ))}
-      </List>
-    </Box>
-  );
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { pagesItems, loginLogoutItem, userFirstName } = useNavbarItems();
+  const [isScrollingUp, setIsScrollingUp] = useState(true);
+  useEffect(() => {
+    let previousScrollY = window.scrollY;
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      if (currentScrollY >= previousScrollY + 80) {
+        setIsScrollingUp(false);
+        previousScrollY = currentScrollY;
+      } else if (currentScrollY < previousScrollY - 80) {
+        setIsScrollingUp(true);
+        previousScrollY = currentScrollY;
+      }
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
 
   return (
-    <>
-      <Box>
-        <CssBaseline />
-        <AppBar component="nav" sx={{ backgroundColor: colors.primary200, boxShadow: "none" }}>
-          <Toolbar sx={{ display: "flex", justifyContent: "space-between", width: "100%", alignItems: "center" }}>
-            <IconButton
-              aria-label="open drawer"
-              edge="start"
-              onClick={handleDrawerToggle}
-              sx={{ mr: 2, display: { md: "none" }, color: colors.text }}
-            >
-              <MenuIcon />
-            </IconButton>
-            <Box sx={{ flex: 1 }}>
-              <Typography fontFamily={"Dancing Script, cursive"} variant="h4"
-                          component="div"
-                          onClick={() => navigate("")}
-                          sx={{
-                            display: { xs: "block" },
-                            color: colors.text,
-                            cursor: "pointer",
-                            transition: "color 0.3s ease",
-                            "&:hover": { color: colors.highlight },
-                          }}>
-                HousingCommunity
-              </Typography>
-            </Box>
-            <Box sx={{ flex: 1, textAlign: "center" }}>
-              {navbarItems.map((item, index) => (
-                <Typography key={index} onClick={item.onClick}
-                            sx={{
-                              display: { xs: "none", sm: "none", md: "inline-block" },
-                              paddingLeft: "0.5rem",
-                              paddingRight: "0.5rem",
-                              cursor: "pointer",
-                              color: colors.text,
-                              fontWeight: "bold",
-                              transition: "color 0.3s ease",
-                              "&:hover": { color: "hsl(28,88%,62%)" },
-                            }}>
-                  {item.name}
-                </Typography>
-              ))}
-            </Box>
-            <Box sx={{
-              flex: 1,
-              justifyContent: "flex-end",
-              gap: "0.5rem",
-              display: { xs: "none", sm: "none", md: "flex" },
-              alignItems: "center",
-            }}>
-              <Typography onClick={loginLogoutItem.onClick}
-                          sx={{
-                            cursor: "pointer",
-                            color: colors.text,
-                            fontWeight: "bold",
-                            transition: "color 0.3s ease",
-                            "&:hover": { color: "hsl(28,88%,62%)" },
-                          }}>
-                {loginLogoutItem.name}
-              </Typography>
-              <SelectTheme />
-              <SelectLanguage />
-            </Box>
-          </Toolbar>
-        </AppBar>
-        <nav>
-          <Drawer
-            variant="temporary"
-            open={mobileOpen}
-            onClose={handleDrawerToggle}
-            ModalProps={{
-              keepMounted: true,
-            }}
-            sx={{
-              display: { xs: "block", sm: "block", md: "none" },
-              "& .MuiDrawer-paper": { boxSizing: "border-box", width: drawerWidth },
-            }}
+    <div className="fixed inset-x-0 top-0 z-50">
+      <nav
+        className={"flex items-center justify-between py-2 px-8 backdrop-blur-lg shadow-lg transition-transform duration-300 "
+          + (!isScrollingUp ? "-translate-y-full" : "translate-y-0")}
+        aria-label="Global">
+        <HomeIcon />
+        <div className="flex lg:hidden">
+          <h1 className="text-sm font-semibold leading-6 mr-2">{userFirstName}</h1>
+          <button
+            type="button"
+            className="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5"
+            onClick={() => setMobileMenuOpen(true)}
           >
-            {drawer}
-          </Drawer>
-        </nav>
-      </Box>
-      <Outlet />
-    </>
+            <span className="sr-only">Open main menu</span>
+            <Bars3Icon className="h-6 w-6" aria-hidden="true" />
+          </button>
+        </div>
+        <div className="hidden lg:flex items-center lg:gap-x-12">
+          {pagesItems.map((item) => (
+            <NavbarButton key={item.name} name={item.name} onClick={item.onClick} />
+          ))}
+        </div>
+        <div className="hidden lg:flex lg:flex-1 lg:justify-end gap-1">
+          <h1 className="text-sm font-semibold leading-6">{userFirstName}</h1>
+          {userFirstName !== "" ?
+            <OptionsMenu onLogoutItemClick={loginLogoutItem.onClick} logoutItemName={loginLogoutItem.name} />
+            :
+            <>
+              <NavbarButton name={loginLogoutItem.name} onClick={loginLogoutItem.onClick} />
+              <OptionsMenu />
+            </>}
+        </div>
+      </nav>
+      <SmallScreenMenu mobileMenuOpen={mobileMenuOpen} setMobileMenuOpen={setMobileMenuOpen} />
+    </div>
   );
 
+};
+
+const HomeIcon = () => {
+  const navigate = useNavigate();
+  return (
+    <div className="flex lg:flex-1 -m-1.5 p-1.5">
+      <svg xmlns="http://www.w3.org/2000/svg" onClick={() => navigate("/")} fill="none" viewBox="0 0 24 24"
+           strokeWidth={1.5}
+           stroke="currentColor" className="h-8 text-primary cursor-pointer">
+        <path strokeLinecap="round" strokeLinejoin="round"
+              d="M8.25 21v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21m0 0h4.5V3.545M12.75 21h7.5V10.75M2.25 21h1.5m18 0h-18M2.25 9l4.5-1.636M18.75 3l-1.5.545m0 6.205 3 1m1.5.5-1.5-.5M6.75 7.364V3h-3v18m3-13.636 10.5-3.819" />
+      </svg>
+    </div>
+  );
 };
 
 export default Navbar;
