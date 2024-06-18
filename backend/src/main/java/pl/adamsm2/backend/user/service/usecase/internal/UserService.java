@@ -57,7 +57,8 @@ class UserService implements UserUseCases {
         SecurityContextHolder.getContext().setAuthentication(authentication);
         User user = (User) authentication.getPrincipal();
         TokenResource tokenResource = getTokenResource(user);
-        saveRefreshToken(user, tokenResource.refreshToken().jwt());
+        refreshTokenRepository.findByUser(user).ifPresent(this::deleteOldRefreshToken);
+        saveNewRefreshToken(user, tokenResource);
         return tokenResource;
     }
 
@@ -71,6 +72,7 @@ class UserService implements UserUseCases {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public UserDataResource getCurrentUserData() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = authentication.getPrincipal() instanceof User principal ? principal : null;
@@ -84,9 +86,12 @@ class UserService implements UserUseCases {
     @Override
     @Transactional
     public TokenResource refreshToken(String jwt) {
-        User user = refreshTokenRepository.findByJwt(jwt).orElseThrow().getUser();
+        RefreshToken oldRefreshToken = refreshTokenRepository.findByJwt(jwt).orElseThrow();
+        validateRefreshTokenIsNotExpired(oldRefreshToken);
+        User user = oldRefreshToken.getUser();
         TokenResource tokenResource = getTokenResource(user);
-        saveRefreshToken(user, tokenResource.refreshToken().jwt());
+        deleteOldRefreshToken(oldRefreshToken);
+        saveNewRefreshToken(user, tokenResource);
         return tokenResource;
     }
 
@@ -103,15 +108,29 @@ class UserService implements UserUseCases {
         }
     }
 
-    private void saveRefreshToken(User user, String jwt) {
-        RefreshToken refreshToken = RefreshToken.builder()
+    private RefreshToken getNewRefreshToken(User user, String jwt) {
+        return RefreshToken.builder()
                 .user(user)
                 .jwt(jwt)
                 .expiryDate(Instant.now().plusMillis(securityProperties.getRefreshTokenExpiration()))
                 .build();
-        refreshTokenRepository.findByUser(user).ifPresent(refreshTokenRepository::delete);
+    }
+
+    private void saveNewRefreshToken(User user, TokenResource tokenResource) {
+        RefreshToken newRefreshToken = getNewRefreshToken(user, tokenResource.refreshToken().jwt());
+        refreshTokenRepository.save(newRefreshToken);
+    }
+
+    private void deleteOldRefreshToken(RefreshToken oldRefreshToken) {
+        refreshTokenRepository.delete(oldRefreshToken);
         refreshTokenRepository.flush();
-        refreshTokenRepository.save(refreshToken);
+    }
+
+    private void validateRefreshTokenIsNotExpired(RefreshToken refreshToken) {
+        if (refreshToken.getExpiryDate().isBefore(Instant.now())) {
+            refreshTokenRepository.delete(refreshToken);
+            throw new IllegalStateException("Refresh token has expired");
+        }
     }
 
     private TokenResource getTokenResource(User user) {
@@ -121,7 +140,7 @@ class UserService implements UserUseCases {
         String accessToken = jwtUtils.createJwt(user, jwtSecret, accessTokenExpiration);
         String refreshToken = jwtUtils.createJwt(user, jwtSecret, refreshTokenExpiration);
         return TokenResource.builder()
-                .accessToken(new TokenDetailsResource(accessToken, accessTokenExpiration))
+                .accessToken(new TokenDetailsResource(accessToken, 10000))
                 .refreshToken(new TokenDetailsResource(refreshToken, refreshTokenExpiration))
                 .build();
     }

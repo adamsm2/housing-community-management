@@ -48,7 +48,13 @@ class UserController {
 
     @PostMapping("/token/refreshToken")
     ResponseEntity<TokenDetailsResource> refreshToken(@Parameter(hidden = true) @CookieValue(name = "refreshToken") String jwt) {
-        return getResponseWithTokens(userUseCases.refreshToken(jwt));
+        TokenResource tokenResource;
+        try {
+            tokenResource = userUseCases.refreshToken(jwt);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).header(HttpHeaders.SET_COOKIE, getDeleteRefreshTokenCookie(jwt).toString()).build();
+        }
+        return getResponseWithTokens(tokenResource);
     }
 
     @PostMapping("/token/logout")
