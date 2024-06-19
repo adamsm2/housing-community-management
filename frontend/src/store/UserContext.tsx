@@ -1,8 +1,9 @@
-import { createContext, PropsWithChildren, useEffect, useMemo, useState } from "react";
+import { createContext, PropsWithChildren, useEffect, useMemo, useRef, useState } from "react";
 import { UserContextType } from "@/store/UserContext.types.ts";
 import { UserDataResource } from "@/api/dto/UserDataResource.ts";
 import localStorageKeys from "@/localstorage-keys.ts";
 import UserApi from "@/api/user.ts";
+import { useInitAxiosInterceptors } from "@/hooks/useInitAxiosInterceptors.ts";
 
 const defaultUserData: UserDataResource = {
   email: "",
@@ -20,31 +21,40 @@ export const UserContextProvider: React.FC<PropsWithChildren> = (props) => {
   const [userData, setUserData] = useState<UserDataResource>(
     defaultUserData,
   );
+  console.log(localStorage.getItem(localStorageKeys.ACCESS_TOKEN));
+  useInitAxiosInterceptors({ setUserData });
+  const initialized = useRef(false);
+
+  useEffect(() => {
+    if (!initialized.current) {
+      initialized.current = true;
+      const accessTokenExpirationDate = localStorage.getItem(localStorageKeys.ACCESS_TOKEN_EXPIRATION_DATE);
+      const isAccessTokenExpired = accessTokenExpirationDate ? parseInt(accessTokenExpirationDate, 10) < new Date().getTime() : true;
+      const accessToken = localStorage.getItem(localStorageKeys.ACCESS_TOKEN);
+      if (isAccessTokenExpired) {
+        UserApi.refreshToken()
+          .then(() => {
+            UserApi.getCurrentUserData()
+              .then((response) => {
+                setUserData(response);
+              });
+          })
+          .catch(() => {
+            localStorage.removeItem(localStorageKeys.ACCESS_TOKEN_EXPIRATION_DATE);
+            localStorage.removeItem(localStorageKeys.ACCESS_TOKEN);
+          });
+      } else if (accessToken) {
+        UserApi.getCurrentUserData()
+          .then((response) => {
+            setUserData(response);
+          });
+      }
+    }
+  }, []);
 
   const setCurrentUser = (newUser: UserDataResource) => {
     setUserData(newUser);
-
   };
-
-  useEffect(() => {
-    const accessTokenExpirationDate = localStorage.getItem(localStorageKeys.ACCESS_TOKEN_EXPIRATION_DATE);
-    const isAccessTokenExpired = accessTokenExpirationDate ? parseInt(accessTokenExpirationDate, 10) < new Date().getTime() : true;
-    if (isAccessTokenExpired && localStorage.getItem(localStorageKeys.ACCESS_TOKEN)) {
-      UserApi.refreshToken()
-        .then(() => {
-        })
-        .catch(() => {
-          localStorage.removeItem(localStorageKeys.ACCESS_TOKEN_EXPIRATION_DATE);
-          localStorage.removeItem(localStorageKeys.ACCESS_TOKEN);
-        });
-    }
-    if (localStorageKeys.ACCESS_TOKEN) {
-      UserApi.getCurrentUserData()
-        .then((response) => {
-          setUserData(response);
-        });
-    }
-  }, []);
 
   const value = useMemo(() => ({
     userData,

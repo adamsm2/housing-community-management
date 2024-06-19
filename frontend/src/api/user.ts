@@ -1,6 +1,5 @@
 import { apiClient } from "./client.ts";
 import localStorageKeys from "@/localstorage-keys.ts";
-import { UserContextType } from "@/store/UserContext.types.ts";
 
 const userControllerUrl = "/users/";
 const userControllerUrlWithRefreshToken = "/users/token/";
@@ -38,8 +37,6 @@ async function refreshToken() {
 async function getCurrentUserData() {
   const response = await apiClient
     .get(userControllerUrl + "current");
-  const userData: UserContextType = response.data;
-  console.log(userData);
   return response.data;
 }
 
