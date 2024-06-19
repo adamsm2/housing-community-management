@@ -5,7 +5,7 @@ import "./i18n";
 import router from "@/router/router.tsx";
 import { RouterProvider } from "react-router-dom";
 import { UserContextProvider } from "@/store/UserContext.tsx";
-import ThemeProvider from "@/themes/ThemeProvider.tsx";
+import ThemeProvider from "@/ThemeProvider.tsx";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>

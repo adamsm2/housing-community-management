@@ -1,19 +1,16 @@
 import { createBrowserRouter } from "react-router-dom";
 import ProtectedRoute from "@/router/ProtectedRoute.tsx";
-import MainPage from "@/pages/MainPage.tsx";
-import Navbar from "@/components/layout/Navbar.tsx";
-import LoginPage from "@/pages/LoginPage.tsx";
-import UserPanelMainPage from "@/pages/user/UserPanelMainPage.tsx";
-import UserMetersPage from "@/pages/user/UserMetersPage.tsx";
-import AnnouncementsPage from "@/pages/AnnouncementsPage.tsx";
-import RegisterPage from "@/pages/RegisterPage.tsx";
+import LoginPage from "@/pages/Auth/LoginPage.tsx";
+import RegisterPage from "@/pages/Auth/RegisterPage.tsx";
 import AuthRoute from "@/router/AuthRoute.tsx";
 import paths from "@/router/paths.ts";
+import RootLayout from "@/components/layout/RootLayout.tsx";
+import HomePage from "@/pages/Home/HomePage.tsx";
 
 const router = createBrowserRouter([
   {
     path: paths.root,
-    element: <Navbar />,
+    element: <RootLayout />,
     children: [
       {
         path: paths.auth.root,
@@ -26,7 +23,8 @@ const router = createBrowserRouter([
           { path: paths.auth.register, element: <RegisterPage /> },
         ],
       },
-      { path: paths.announcements, element: <AnnouncementsPage /> },
+      { path: paths.announcements, element: <div className="mt-36">Announcement</div> },
+      { path: paths.contact, element: <div className="mt-36">Contact</div> },
       {
         path: paths.user.root,
         element: (
@@ -34,12 +32,12 @@ const router = createBrowserRouter([
           </ProtectedRoute>
         ),
         children: [
-          { index: true, element: <UserPanelMainPage /> },
-          { path: paths.user.meters, element: <UserMetersPage /> },
+          { index: true, element: <div className="mt-36">User panel</div> },
+          { path: paths.user.meters, element: <div className="mt-36">Meters</div> },
         ],
       },
-      { path: paths.root, element: <MainPage /> },
-      { path: "*", element: <MainPage /> },
+      { path: paths.root, element: <HomePage /> },
+      { path: "*", element: <HomePage /> },
     ],
   },
 ]);

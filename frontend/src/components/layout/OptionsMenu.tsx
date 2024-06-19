@@ -23,8 +23,8 @@ const OptionsMenu = (props: OptionsMenuProps) => {
         </div>
         {props.logoutItemName ?
           <div className="pt-2 pb-1 mb-1 border-t-2 border-gray-500/10">
-            <button onClick={props.onLogoutItemClick}
-                    className="text-sm font-semibold leading-6 transition-colors ease-out duration-300 hover:font-bold">{props.logoutItemName}</button>
+            <h1 onClick={props.onLogoutItemClick}
+                className="text-sm font-semibold leading-6 transition-colors ease-out duration-300 hover:font-bold">{props.logoutItemName}</h1>
           </div> : null}
       </div>
     </button>

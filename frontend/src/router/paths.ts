@@ -6,9 +6,10 @@ const paths = {
     register: "/auth/register",
   },
   announcements: "/announcements",
+  contact: "/contact",
   user: {
-    root: "/user",
-    meters: "/user/meters",
+    root: "/UserPanel",
+    meters: "/UserPanel/meters",
   },
 };
 

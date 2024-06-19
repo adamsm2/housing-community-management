@@ -19,17 +19,17 @@ const LanguageSwitch = () => {
   const [isPolishSelected, setIsPolishSelected] = useState(
     getLanguageFromCode(localStorage.getItem("language") ?? "pl") === POLISH,
   );
-  const language = isPolishSelected ? ENGLISH : POLISH;
+  const languageToSelect = isPolishSelected ? ENGLISH : POLISH;
 
   const handleClick = () => {
-    localStorage.setItem(localStorageKeys.LANGUAGE, language.code);
-    i18n.changeLanguage(language.code)
+    localStorage.setItem(localStorageKeys.LANGUAGE, languageToSelect.code);
+    i18n.changeLanguage(languageToSelect.code)
       .then(() => setIsPolishSelected(!isPolishSelected))
       .catch((error) => console.error(error));
   };
 
   return (
-    <img src={language.flagIcon} onClick={handleClick} alt="language switch"
+    <img src={languageToSelect.flagIcon} onClick={handleClick} alt="language switch"
          className="iconButton" />
   );
 };

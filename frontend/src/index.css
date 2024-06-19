@@ -15,11 +15,14 @@
     }
 
     :root {
-        --color-primary: 79 70 229;
+        --color-primary: 99 102 241;
+        --color-primary-hover: 129 140 248;
         --color-secondary: 55 65 81;
-        --color-text-title: 249 250 251;
-        --color-text-content: 209 213 219;
+        --color-secondary-hover: 3 7 18;
+        --color-text-title: 226 232 240;
+        --color-text-content: 148 163 184;
         --color-bkg: 17 24 39;
+        --color-test: #111827 243 244 246;
     }
 
     :root[data-theme="light"] {
@@ -40,13 +43,14 @@
         --color-text-title: 226 232 240;
         --color-text-content: 148 163 184;
         --color-bkg: 17 24 39;
-        --color-test: #f3f4f6 243 244 246;
     }
 
     @media (prefers-color-scheme: light) {
         :root {
             --color-primary: 79 70 229;
+            --color-primary-hover: 99 102 241;
             --color-secondary: 55 65 81;
+            --color-secondary-hover: 243 244 246;
             --color-text-title: 17 24 39;
             --color-text-content: 75 85 99;
             --color-bkg: 255 255 255;

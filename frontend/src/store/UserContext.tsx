@@ -21,7 +21,7 @@ export const UserContextProvider: React.FC<PropsWithChildren> = (props) => {
   const [userData, setUserData] = useState<UserDataResource>(
     defaultUserData,
   );
-  console.log(localStorage.getItem(localStorageKeys.ACCESS_TOKEN));
+
   useInitAxiosInterceptors({ setUserData });
   const initialized = useRef(false);
 
@@ -31,7 +31,7 @@ export const UserContextProvider: React.FC<PropsWithChildren> = (props) => {
       const accessTokenExpirationDate = localStorage.getItem(localStorageKeys.ACCESS_TOKEN_EXPIRATION_DATE);
       const isAccessTokenExpired = accessTokenExpirationDate ? parseInt(accessTokenExpirationDate, 10) < new Date().getTime() : true;
       const accessToken = localStorage.getItem(localStorageKeys.ACCESS_TOKEN);
-      if (isAccessTokenExpired) {
+      if (isAccessTokenExpired && accessToken) {
         UserApi.refreshToken()
           .then(() => {
             UserApi.getCurrentUserData()
