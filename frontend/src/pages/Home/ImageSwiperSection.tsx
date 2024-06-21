@@ -16,19 +16,18 @@ import { useEffect, useRef } from "react";
 
 const ImageSwiperSection = () => {
   const { t } = useTranslation();
-  const media = window.matchMedia("(max-width: 700px)");
-
   const swiperRef = useRef<SwiperRef>(null);
   const { ref: imageRef1, inView: inView1 } = useInView({
     triggerOnce: true,
     threshold: 0.1,
   });
-
   useEffect(() => {
     if (inView1) {
       swiperRef.current?.swiper?.slideTo(2);
     }
   }, [inView1]);
+
+  const media = window.matchMedia("(max-width: 700px)");
 
 
   return (

@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { Bars3Icon } from "@heroicons/react/24/outline";
 import useNavbarItems from "@/hooks/useNavbarItems.ts";
 import SmallScreenMenu from "@/components/layout/SmallScreenMenu.tsx";
-import NavbarButton from "@/components/NavbarButton.tsx";
+import NavbarButton from "@/components/ui/NavbarButton.tsx";
 import OptionsMenu from "@/components/layout/OptionsMenu.tsx";
 
 
@@ -11,6 +11,7 @@ const Navbar = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { pagesItems, loginLogoutItem, userFirstName } = useNavbarItems();
   const [isScrollingUp, setIsScrollingUp] = useState(true);
+
   useEffect(() => {
     let previousScrollY = window.scrollY;
     const handleScroll = () => {

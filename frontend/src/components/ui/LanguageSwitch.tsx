@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { useState } from "react";
-import { ENGLISH, Language, POLISH } from "../locale/languages.ts";
+import { ENGLISH, Language, POLISH } from "@/locale/languages.ts";
 import localStorageKeys from "@/localstorage-keys.ts";
 
 const getLanguageFromCode = (code: string): Language => {

@@ -1,6 +1,6 @@
 import { Bars3Icon } from "@heroicons/react/24/outline";
-import ThemeSwitch from "@/components/ThemeSwitch.tsx";
-import LanguageSwitch from "@/components/LanguageSwitch.tsx";
+import ThemeSwitch from "@/components/ui/ThemeSwitch.tsx";
+import LanguageSwitch from "@/components/ui/LanguageSwitch.tsx";
 
 interface OptionsMenuProps {
   logoutItemName?: string;

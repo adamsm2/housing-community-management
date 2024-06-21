@@ -1,8 +1,11 @@
 import { CreditCardIcon, PresentationChartLineIcon } from "@heroicons/react/20/solid";
 import { useTranslation } from "react-i18next";
+import paths from "@/router/paths.ts";
+import { useNavigate } from "react-router-dom";
 
 const UserPanelPresentationSection = () => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const features = [
     {
       name: t("checkStateOfMeters"),
@@ -39,12 +42,12 @@ const UserPanelPresentationSection = () => {
                 </div>
               ))}
               <div className="mt-10 flex items-center gap-x-6">
-                <a
-                  href="#"
-                  className="shadow-sm rounded-full bg-primary px-3.5 py-2.5 text-center text-sm font-semibold text-white hover:bg-primaryHover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                <button
+                  onClick={() => navigate(paths.auth.register)}
+                  className="cursor-pointer shadow-sm rounded-full bg-primary px-3.5 py-2.5 text-sm font-semibold text-white hover:bg-primaryHover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
                 >
                   {t("createResidentAccount")}
-                </a>
+                </button>
                 <a href="#"
                    className=" px-3.5 py-2.5 text-sm font-semibold hover:font-bold text-center">
                   {t("findOutMore")}<span aria-hidden="true">→</span>

@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { useContext, useEffect, useState } from "react";
-import useLoginUserValidationSchema from "@/components/forms/schemas/login-user.ts";
+import loginUserValidationSchema from "@/components/forms/schemas/login-user.ts";
 import { SubmitHandler, useForm } from "react-hook-form";
 import UserApi from "@/api/user.ts";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -14,10 +14,10 @@ const LoginUserForm = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState("");
-  const schema = useLoginUserValidationSchema();
+  const schema = loginUserValidationSchema();
   const { setCurrentUser } = useContext(UserContext);
 
-  const onSubmit: SubmitHandler<LoginUserRequest> = async (data) => {
+  const onSubmit: SubmitHandler<LoginUserRequest> = (data) => {
     setIsLoading(true);
     UserApi.loginUser(data)
       .then((userData) => {

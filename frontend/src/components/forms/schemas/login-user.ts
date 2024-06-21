@@ -1,12 +1,12 @@
-import useUserCredentialsValidationSchema from "@/components/forms/schemas/user-credentials.ts";
+import userCredentialsValidationSchema from "@/components/forms/schemas/user-credentials.ts";
 import * as yup from "yup";
 
-const useLoginUserValidationSchema = () => {
-  const schema = useUserCredentialsValidationSchema();
+const loginUserValidationSchema = () => {
+  const schema = userCredentialsValidationSchema();
 
   return yup.object().shape({
     ...schema,
   }).required();
 };
 
-export default useLoginUserValidationSchema;
+export default loginUserValidationSchema;

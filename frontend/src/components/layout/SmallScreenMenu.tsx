@@ -1,7 +1,7 @@
 import useNavbarItems from "@/hooks/useNavbarItems.ts";
 import { Dialog, DialogPanel, Transition, TransitionChild } from "@headlessui/react";
-import ThemeSwitch from "@/components/ThemeSwitch.tsx";
-import LanguageSwitch from "@/components/LanguageSwitch.tsx";
+import ThemeSwitch from "@/components/ui/ThemeSwitch.tsx";
+import LanguageSwitch from "@/components/ui/LanguageSwitch.tsx";
 import { XMarkIcon } from "@heroicons/react/20/solid";
 
 

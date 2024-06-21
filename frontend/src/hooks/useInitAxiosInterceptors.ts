@@ -32,7 +32,7 @@ export const useInitAxiosInterceptors = ({ setUserData }: Props) => {
               return Promise.reject(Error("Internal error"));
             }
             if (error.response.status !== 401 || !localStorage.getItem(localStorageKeys.ACCESS_TOKEN)) {
-              return Promise.reject(Error(error));
+              return Promise.reject(error);
             }
             apiClient.interceptors.response.eject(interceptor);
 
