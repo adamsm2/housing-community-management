@@ -1,7 +1,7 @@
 import Navbar from "@/components/layout/Navbar.tsx";
 import Footer from "@/components/layout/Footer.tsx";
 import { Outlet } from "react-router-dom";
-import JumpUpButton from "@/components/layout/JumpUpButton.tsx";
+import JumpUpButton from "@/components/ui/JumpUpButton.tsx";
 
 const RootLayout = () => {
   return (
@@ -10,7 +10,9 @@ const RootLayout = () => {
       <JumpUpButton />
       <div className="relative isolate px-6 lg:px-8">
         <TopPolygon />
-        <Outlet />
+        <div className="min-h-screen">
+          <Outlet />
+        </div>
       </div>
       <div className="relative">
         <Footer />

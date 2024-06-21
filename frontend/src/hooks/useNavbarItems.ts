@@ -20,7 +20,7 @@ const useNavbarItems = () => {
       items.push({ name: t("userPanel"), onClick: () => navigate(paths.user.root) });
     }
     return items;
-  }, [userData]);
+  }, [userData, t]);
 
   const logoutUser = () => {
     UserApi.logoutUser()
@@ -36,7 +36,7 @@ const useNavbarItems = () => {
       onClick: userData.role === "" ? () => navigate(paths.auth.login) :
         logoutUser,
     };
-  }, [userData]);
+  }, [userData, t]);
 
   return { pagesItems, loginLogoutItem, userFirstName };
 };
