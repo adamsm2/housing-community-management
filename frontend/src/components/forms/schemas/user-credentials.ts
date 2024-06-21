@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
 import * as yup from "yup";
 
-const useUserCredentialsValidationSchema = () => {
+const userCredentialsValidationSchema = () => {
   const { t } = useTranslation();
 
   return {
@@ -19,4 +19,4 @@ const useUserCredentialsValidationSchema = () => {
 
 };
 
-export default useUserCredentialsValidationSchema;
+export default userCredentialsValidationSchema;

@@ -1,13 +1,19 @@
 import * as yup from "yup";
 import { useTranslation } from "react-i18next";
-import useUserCredentialsValidationSchema from "@/components/forms/schemas/user-credentials.ts";
+import userCredentialsValidationSchema from "@/components/forms/schemas/user-credentials.ts";
 
-const useRegisterUserValidationSchema = () => {
+const registerUserValidationSchema = () => {
   const { t } = useTranslation();
-  const schema = useUserCredentialsValidationSchema();
+  const schema = userCredentialsValidationSchema();
 
   return yup.object().shape({
     ...schema,
+    firstName: yup
+      .string()
+      .required(t("firstNameRequired")),
+    lastName: yup
+      .string()
+      .required(t("lastNameRequired")),
     passwordRepeated: yup
       .string()
       .oneOf([yup.ref("password"), ""], t("passwordMatch"))
@@ -17,4 +23,4 @@ const useRegisterUserValidationSchema = () => {
 };
 
 
-export default useRegisterUserValidationSchema;
+export default registerUserValidationSchema;
