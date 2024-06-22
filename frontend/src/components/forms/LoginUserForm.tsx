@@ -1,13 +1,20 @@
 import { useTranslation } from "react-i18next";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useMemo, useState } from "react";
 import loginUserValidationSchema from "@/components/forms/schemas/login-user.ts";
-import { SubmitHandler, useForm } from "react-hook-form";
+import { FieldError, SubmitHandler, useForm } from "react-hook-form";
 import UserApi from "@/api/user.ts";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { CircularProgress } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import paths from "@/router/paths.ts";
 import { UserContext } from "@/store/UserContext.tsx";
+import FormField from "@/components/forms/FormField.tsx";
+
+type FormFieldProps = {
+  name: keyof LoginUserRequest;
+  type: string;
+  error: FieldError | undefined;
+}
 
 const LoginUserForm = () => {
   const { t } = useTranslation();
@@ -16,6 +23,21 @@ const LoginUserForm = () => {
   const [message, setMessage] = useState("");
   const schema = loginUserValidationSchema();
   const { setCurrentUser } = useContext(UserContext);
+
+  const {
+    register, handleSubmit,
+    setValue,
+    formState: { errors },
+  } = useForm<LoginUserRequest>({
+    resolver: yupResolver(schema),
+  });
+
+  const formFields: FormFieldProps[] = useMemo(() => {
+    return [
+      { name: "email", type: "email", error: errors.email },
+      { name: "password", type: "password", error: errors.password },
+    ];
+  }, [errors]);
 
   const onSubmit: SubmitHandler<LoginUserRequest> = (data) => {
     setIsLoading(true);
@@ -32,56 +54,43 @@ const LoginUserForm = () => {
       });
   };
 
-  const {
-    register, handleSubmit,
-    setValue, reset,
-    formState: { errors }, watch,
-  } = useForm<LoginUserRequest>({
-    resolver: yupResolver(schema),
-  });
-
-  const email = watch("email");
-  const password = watch("password");
-  useEffect(() => {
-    setMessage("");
-  }, [email, password]);
-
   const setValues = () => {
     setValue("email", "abc@gmail.com");
     setValue("password", "password123");
   };
 
-  const clearForm = () => {
-    reset({
-      email: "",
-      password: "",
-    });
-  };
-
   return (
-    <>
-      {isLoading ? <div><CircularProgress /></div> :
-        <>
-          <form onSubmit={handleSubmit(onSubmit)}>
-            <div>
-              <label htmlFor="email">Email</label>
-              <input id="email" {...register("email")} />
-              {errors.email && <p>{errors.email.message}</p>}
-            </div>
-            <div>
-              <label htmlFor="password">Password</label>
-              <input id="password" type="password" {...register("password")} />
-              {errors.password && <p>{errors.password.message}</p>}
-            </div>
-            {message && <p>{message}</p>}
-            <button type="submit">Login</button>
+    <form onSubmit={handleSubmit(onSubmit)} className="mx-auto mt-10 max-w-xl sm:mt-10">
+      <div className="grid grid-cols-1 gap-x-8 gap-y-6">
+        {formFields.map((item) => (
+          <div key={item.name}>
+            <FormField name={item.name} translatedName={t(item.name)} type={item.type} register={register}
+                       error={item.error?.message} />
+          </div>
+        ))}
+      </div>
+      <div className="mt-5 text-center">
+        {message && <p>{message}</p>}
+      </div>
+      <div className="mt-10">
+        {isLoading ? <div className="text-center mb-0"><CircularProgress /></div> :
+          <>
+            <button
+              type="submit"
+              className="block w-full rounded-md bg-primary px-3.5 py-2.5 text-center text-sm font-semibold text-white shadow-sm hover:bg-primaryHover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primaryHover"
+            >
+              {t("signIn")}
+            </button>
+            <button
+              onClick={() => navigate(paths.auth.register)}
+              className="mt-2 block w-full px-3.5 py-2.5 text-center text-sm font-semibold text-textTitle underline hover:text-primaryHover"
+            >
+              {t("createResidentAccount")}
+            </button>
             <button type="button" onClick={setValues}>Set Values</button>
-            <button type="button" onClick={clearForm}>Clear Form</button>
-          </form>
-          <button onClick={() => navigate(paths.auth.register)}>{t("createNewAccount")}</button>
-        </>
-      }
-    </>
+          </>}
+      </div>
+    </form>
   );
 
 };

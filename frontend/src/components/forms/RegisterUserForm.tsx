@@ -7,11 +7,11 @@ import registerUserValidationSchema from "@/components/forms/schemas/register-us
 import { CircularProgress } from "@mui/material";
 import paths from "@/router/paths.ts";
 import { useNavigate } from "react-router-dom";
+import FormField from "@/components/forms/FormField.tsx";
 
 type FormFieldProps = {
   name: keyof RegisterUserRequest;
   type: string;
-  colSpan: number;
   error: FieldError | undefined;
 }
 
@@ -32,11 +32,11 @@ const RegisterUserForm = () => {
 
   const formFields: FormFieldProps[] = useMemo(() => {
     return [
-      { name: "firstName", type: "text", colSpan: 1, error: errors.firstName },
-      { name: "lastName", type: "text", colSpan: 1, error: errors.lastName },
-      { name: "email", type: "email", colSpan: 2, error: errors.email },
-      { name: "password", type: "password", colSpan: 1, error: errors.password },
-      { name: "passwordRepeated", type: "password", colSpan: 1, error: errors.passwordRepeated },
+      { name: "firstName", type: "text", error: errors.firstName },
+      { name: "lastName", type: "text", error: errors.lastName },
+      { name: "email", type: "email", error: errors.email },
+      { name: "password", type: "password", error: errors.password },
+      { name: "passwordRepeated", type: "password", error: errors.passwordRepeated },
     ];
   }, [errors]);
 
@@ -67,11 +67,8 @@ const RegisterUserForm = () => {
       <div className="grid grid-cols-1 gap-x-8 gap-y-6">
         {formFields.map((item) => (
           <div key={item.name}>
-            <label htmlFor={item.name}
-                   className="block text-sm font-semibold leading-6 text-textTitle">{t(item.name)}</label>
-            <input id={item.name} type={item.type} {...register(item.name)}
-                   className="mt-2.5 block w-full rounded-md border-0 px-3.5 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
-            <p className="text-red-400">{item.error?.message}</p>
+            <FormField name={item.name} translatedName={t(item.name)} type={item.type} register={register}
+                       error={item.error?.message} />
           </div>
         ))}
       </div>
@@ -89,7 +86,7 @@ const RegisterUserForm = () => {
             </button>
             <button
               onClick={() => navigate(paths.auth.login)}
-              className="mt-2 block w-full rounded-md bg-gray-600 px-3.5 py-2.5 text-center text-sm font-semibold text-white shadow-sm hover:bg-gray-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-500"
+              className="mt-2 block w-full px-3.5 py-2.5 text-center text-sm font-semibold text-textTitle underline hover:text-primaryHover"
             >
               {t("backToLoginPage")}
             </button>

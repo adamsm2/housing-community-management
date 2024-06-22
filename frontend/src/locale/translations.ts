@@ -46,7 +46,7 @@ const translations = {
       email: "Email",
       password: "Password",
       passwordRepeated: "Repeated password",
-      backToLoginPage: "Back to login page",
+      backToLoginPage: "Back to the login page",
     },
   },
   [POLISH.code]: {
