@@ -41,6 +41,13 @@
 ## How to use
 ### Access Swagger UI: http://localhost:8080/swagger-ui/index.html
 
+### 
+Change the environment variables in the compose.yml file using your email and app password from your Google account.
+```
+- MAIL_USERNAME=TYPE_HERE_YOUR_EMAIL
+- MAIL_PASSWORD=TYPE_HERE_YOUR_PASSWORD
+```
+
 ### Build
 
 ```
@@ -66,11 +73,13 @@ docker compose down
 ```
 
 
-## Features
+## Done / todo
 - [x] User authentication and authorization (JWT)
+- [x] User's email verification 
 - [x] Automatic access token refreshing when needed
 - [x] Home page
 - [x] Theme, language switching
 - [ ] Announcements page
 - [ ] User dashboard
 - [ ] Admin dashboard
+- [ ] Security issues like monitoring failed login attempts
