@@ -42,8 +42,8 @@
 ### Access Swagger UI: http://localhost:8080/swagger-ui/index.html
 
 ### 
-Change the environment variables in the compose.yml file using your email and app password from your Google account.
-```
+Change the environment variables in the [compose.yml](./compose.yml) file using your email and app password from your Google account.
+```yaml
 - MAIL_USERNAME=TYPE_HERE_YOUR_EMAIL
 - MAIL_PASSWORD=TYPE_HERE_YOUR_PASSWORD
 ```
