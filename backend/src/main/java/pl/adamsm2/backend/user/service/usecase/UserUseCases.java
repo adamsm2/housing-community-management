@@ -16,6 +16,10 @@ public interface UserUseCases {
 
     TokenResource refreshToken(String jwt);
 
+    void verifyEmail(VerifyEmailRequest verifyEmailRequest);
+
+    void resendVerificationEmail(ResendVerificationEmailRequest resendVerificationEmailRequest);
+
     void logoutUser(String jwt);
 
 }

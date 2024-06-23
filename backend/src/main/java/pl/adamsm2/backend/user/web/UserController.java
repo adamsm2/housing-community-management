@@ -63,6 +63,18 @@ class UserController {
         return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, getDeleteRefreshTokenCookie(jwt).toString()).build();
     }
 
+    @PostMapping("/verify")
+    ResponseEntity<Void> verifyUser(@RequestBody @Valid VerifyEmailRequest verifyEmailRequest) {
+        userUseCases.verifyEmail(verifyEmailRequest);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/resend/verification")
+    ResponseEntity<Void> resendVerificationEmail(@RequestBody @Valid ResendVerificationEmailRequest resendVerificationEmailRequest) {
+        userUseCases.resendVerificationEmail(resendVerificationEmailRequest);
+        return ResponseEntity.ok().build();
+    }
+
     private ResponseCookie getRefreshTokenCookie(TokenResource tokenResource) {
         return ResponseCookie.from("refreshToken", tokenResource.refreshToken().jwt())
                 .httpOnly(true)

@@ -16,6 +16,9 @@ class UserMapperService implements UserMapper {
         return User.builder()
                 .email(registerUserRequest.email())
                 .password(registerUserRequest.password())
+                .firstName(registerUserRequest.firstName())
+                .lastName(registerUserRequest.lastName())
+                .isVerified(false)
                 .build();
     }
 

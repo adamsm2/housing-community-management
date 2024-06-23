@@ -10,6 +10,8 @@ import lombok.extern.jackson.Jacksonized;
 @Jacksonized
 public record RegisterUserRequest(
         @NotBlank @Size(max = 100) @Email String email,
-        @NotBlank @Size(min = 8, max = 64) String password
+        @NotBlank @Size(min = 8, max = 64) String password,
+        @NotBlank @Size(max = 100) String firstName,
+        @NotBlank @Size(max = 100) String lastName
 ) {
 }

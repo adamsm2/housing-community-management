@@ -20,4 +20,7 @@ public class SecurityProperties {
     @Value("${app.jwt.refresh-expiration}")
     private long refreshTokenExpiration;
 
+    @Value("${spring.mail.verificationCodeExpiration}")
+    private long emailVerificationCodeExpiration;
+
 }

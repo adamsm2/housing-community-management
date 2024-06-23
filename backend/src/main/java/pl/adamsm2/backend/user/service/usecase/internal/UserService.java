@@ -11,10 +11,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.adamsm2.backend.security.SecurityProperties;
 import pl.adamsm2.backend.security.jwt.JwtUtils;
-import pl.adamsm2.backend.user.domain.ERole;
-import pl.adamsm2.backend.user.domain.RefreshToken;
-import pl.adamsm2.backend.user.domain.Role;
-import pl.adamsm2.backend.user.domain.User;
+import pl.adamsm2.backend.shared.exception.UserAccountNotVerifiedException;
+import pl.adamsm2.backend.user.domain.*;
 import pl.adamsm2.backend.user.domain.repository.RefreshTokenRepository;
 import pl.adamsm2.backend.user.domain.repository.RoleRepository;
 import pl.adamsm2.backend.user.domain.repository.UserRepository;
@@ -22,6 +20,7 @@ import pl.adamsm2.backend.user.dto.*;
 import pl.adamsm2.backend.user.service.mapper.UserMapper;
 import pl.adamsm2.backend.user.service.usecase.UserUseCases;
 
+import java.security.SecureRandom;
 import java.time.Instant;
 import java.util.Collection;
 
@@ -37,16 +36,19 @@ class UserService implements UserUseCases {
     private final SecurityProperties securityProperties;
     private final AuthenticationManager authenticationManager;
     private final JwtUtils jwtUtils;
+    private final MailService mailService;
 
     @Override
     @Transactional
     public void registerUser(RegisterUserRequest registerUserRequest) {
-        validateUserDoesntExist(registerUserRequest.email());
+        validateUserEmail(registerUserRequest.email());
         User user = userMapper.mapRegisterUserRequestToUser(registerUserRequest);
+        VerificationCode verificationCode = generateVerificationCode();
         setRoleForNewUser(user);
-        final String encodedPassword = passwordEncoder.encode(registerUserRequest.password() + securityProperties.getPepper());
-        user.setPassword(encodedPassword);
+        user.setPassword(getEncodedPassword(registerUserRequest.password()));
+        user.setVerificationCode(verificationCode);
         userRepository.save(user);
+        mailService.sendVerificationEmail(user.getEmail(), verificationCode.getCode());
     }
 
     @Override
@@ -56,6 +58,7 @@ class UserService implements UserUseCases {
                 .authenticate(new UsernamePasswordAuthenticationToken(loginUserRequest.email(), loginUserRequest.password() + securityProperties.getPepper()));
         SecurityContextHolder.getContext().setAuthentication(authentication);
         User user = (User) authentication.getPrincipal();
+        validateUserAccountIsVerified(user);
         TokenResource tokenResource = getTokenResource(user);
         refreshTokenRepository.findByUser(user).ifPresent(this::deleteOldRefreshToken);
         saveNewRefreshToken(user, tokenResource);
@@ -96,16 +99,41 @@ class UserService implements UserUseCases {
     }
 
     @Override
+    public void verifyEmail(VerifyEmailRequest verifyEmailRequest) {
+        User user = userRepository.findByEmail(verifyEmailRequest.email()).orElseThrow();
+        VerificationCode verificationCode = user.getVerificationCode();
+        validateUserIsNotVerified(user);
+        validateVerificationCodeIsNotExpired(verificationCode);
+        validateVerificationCodeIsValid(verificationCode.getCode(), verifyEmailRequest.code());
+        user.setVerified(true);
+        userRepository.save(user);
+    }
+
+    @Override
+    public void resendVerificationEmail(ResendVerificationEmailRequest resendVerificationEmailRequest) {
+        User user = userRepository.findByEmail(resendVerificationEmailRequest.email()).orElseThrow();
+        validateVerificationCodeIsExpired(user.getVerificationCode());
+        VerificationCode verificationCode = generateVerificationCode();
+        user.setVerificationCode(verificationCode);
+        userRepository.save(user);
+        mailService.sendVerificationEmail(user.getEmail(), verificationCode.getCode());
+    }
+
+    @Override
     @Transactional
     public void logoutUser(String jwt) {
         final RefreshToken refreshToken = refreshTokenRepository.findByJwt(jwt).orElseThrow();
         refreshTokenRepository.delete(refreshToken);
     }
 
-    private void validateUserDoesntExist(String email) {
-        if (userRepository.existsByEmail(email)) {
-            throw new IllegalStateException("User with email " + email + " already exists");
-        }
+    private void validateUserEmail(String email) {
+        userRepository.findByEmail(email).ifPresent(user -> {
+            if (user.isVerified()) {
+                throw new IllegalStateException("User with email: " + email + " already exists");
+            } else {
+                throw new UserAccountNotVerifiedException("User account is not enabled");
+            }
+        });
     }
 
     private RefreshToken getNewRefreshToken(User user, String jwt) {
@@ -133,6 +161,36 @@ class UserService implements UserUseCases {
         }
     }
 
+    private void validateUserIsNotVerified(User user) {
+        if (user.isVerified()) {
+            throw new IllegalStateException("User is already verified");
+        }
+    }
+
+    private void validateVerificationCodeIsNotExpired(VerificationCode verificationCode) {
+        if (verificationCode.getExpirationDate().isBefore(Instant.now())) {
+            throw new IllegalStateException("Verification code has expired");
+        }
+    }
+
+    private void validateVerificationCodeIsExpired(VerificationCode verificationCode) {
+        if (verificationCode.getExpirationDate().isAfter(Instant.now())) {
+            throw new IllegalStateException("Previous verification code is still valid");
+        }
+    }
+
+    private void validateVerificationCodeIsValid(String code, String providedCode) {
+        if (!code.equals(providedCode)) {
+            throw new IllegalStateException("Invalid verification code");
+        }
+    }
+
+    private void validateUserAccountIsVerified(User user) {
+        if (!user.isVerified()) {
+            throw new UserAccountNotVerifiedException("User account is not verified");
+        }
+    }
+
     private TokenResource getTokenResource(User user) {
         long accessTokenExpiration = securityProperties.getAccessTokenExpiration();
         long refreshTokenExpiration = securityProperties.getRefreshTokenExpiration();
@@ -148,6 +206,30 @@ class UserService implements UserUseCases {
     private void setRoleForNewUser(User user) {
         final Role role = roleRepository.findByName(ERole.ROLE_USER).orElseThrow();
         user.setRole(role);
+    }
+
+    private String getEncodedPassword(String password) {
+        String passwordWithPepper = password + securityProperties.getPepper();
+        return passwordEncoder.encode(passwordWithPepper);
+    }
+
+    private VerificationCode generateVerificationCode() {
+        String code = generateRandomCode();
+        return VerificationCode.builder()
+                .code(code)
+                .expirationDate(Instant.now().plusMillis(securityProperties.getEmailVerificationCodeExpiration()))
+                .build();
+    }
+
+    private String generateRandomCode() {
+        StringBuilder sb = new StringBuilder();
+        SecureRandom random = new SecureRandom();
+        String chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        for (int i = 0; i < 6; i++) {
+            int index = random.nextInt(chars.length());
+            sb.append(chars.charAt(index));
+        }
+        return sb.toString();
     }
 
 }

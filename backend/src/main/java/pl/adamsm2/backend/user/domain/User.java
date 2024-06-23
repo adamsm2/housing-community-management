@@ -43,6 +43,15 @@ public class User implements UserDetails {
     @ManyToOne
     private Role role;
 
+    @Column(nullable = false)
+    @EqualsAndHashCode.Exclude
+    private boolean isVerified;
+
+    @Embedded
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    private VerificationCode verificationCode;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<GrantedAuthority> authorities = new ArrayList<>();
