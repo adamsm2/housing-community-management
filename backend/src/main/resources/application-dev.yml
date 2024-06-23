@@ -11,8 +11,8 @@ spring:
 app:
   jwt:
     secret: ${JWT_SECRET}
-    access-expiration: ${JWT_EXPIRATION}
-    refresh-expiration: ${JWT_REFRESH_EXPIRATION}
+    access-expiration: 300000
+    refresh-expiration: 3600000
   cors:
     allowed-origins: ${CORS_ALLOWED_ORIGINS}
   pepper:

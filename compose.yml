@@ -16,6 +16,9 @@ services:
     environment:
       - SPRING_PROFILES_ACTIVE=dev
       - PEPPER=XYZ
+      - JWT_SECRET=42j892k95kdkasdl312lelasefom3rk30r
+      - MAIL_USERNAME=TYPE_HERE_YOUR_EMAIL
+      - MAIL_PASSWORD=TYPE_HERE_YOUR_PASSWORD
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
       - DATASOURCE_URL=jdbc:postgresql://db:5432/hcm-app
