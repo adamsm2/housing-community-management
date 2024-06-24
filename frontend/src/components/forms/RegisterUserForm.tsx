@@ -8,6 +8,7 @@ import { CircularProgress } from "@mui/material";
 import paths from "@/router/paths.ts";
 import { useNavigate } from "react-router-dom";
 import FormField from "@/components/forms/FormField.tsx";
+import { toast } from "react-toastify";
 
 type FormFieldProps = {
   name: keyof RegisterUserRequest;
@@ -19,7 +20,6 @@ const RegisterUserForm = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
-  const [message, setMessage] = useState("");
   const schema = registerUserValidationSchema();
 
   const {
@@ -44,10 +44,10 @@ const RegisterUserForm = () => {
     setIsLoading(true);
     UserApi.registerUser(data)
       .then(() => {
-        setMessage(t("registeredSuccessfully"));
+        toast.success(t("registeredSuccessfully"));
       })
       .catch((error) => {
-        error.response ? setMessage(t("userExists")) : setMessage(t("internalError"));
+        error.response ? toast.error(t("userExists")) : toast.error(t("internalError"));
       })
       .finally(() => {
         setIsLoading(false);
@@ -72,9 +72,6 @@ const RegisterUserForm = () => {
           </div>
         ))}
       </div>
-      <div className="mt-5 text-center">
-        {message && <p>{message}</p>}
-      </div>
       <div className="mt-10">
         {isLoading ? <div className="text-center mb-0"><CircularProgress /></div> :
           <>
@@ -85,6 +82,7 @@ const RegisterUserForm = () => {
               {t("createResidentAccount")}
             </button>
             <button
+              type="button"
               onClick={() => navigate(paths.auth.login)}
               className="mt-2 block w-full px-3.5 py-2.5 text-center text-sm font-semibold text-textTitle underline hover:text-primaryHover"
             >

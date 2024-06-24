@@ -2,6 +2,7 @@ import Navbar from "@/components/layout/Navbar.tsx";
 import Footer from "@/components/layout/Footer.tsx";
 import { Outlet } from "react-router-dom";
 import JumpUpButton from "@/components/ui/JumpUpButton.tsx";
+import { ToastContainer } from "react-toastify";
 
 const RootLayout = () => {
   return (
@@ -18,6 +19,7 @@ const RootLayout = () => {
         <Footer />
         <BottomPolygon />
       </div>
+      <ToastContainer position={"top-center"} />
     </>
   );
 };

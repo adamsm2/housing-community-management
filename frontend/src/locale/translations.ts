@@ -47,6 +47,7 @@ const translations = {
       password: "Password",
       passwordRepeated: "Repeated password",
       backToLoginPage: "Back to the login page",
+      loginSuccess: "Logged in successfully",
     },
   },
   [POLISH.code]: {
@@ -96,6 +97,7 @@ const translations = {
       password: "Hasło",
       passwordRepeated: "Powtórzone hasło",
       backToLoginPage: "Powróć do strony logowania",
+      loginSuccess: "Zalogowano pomyślnie",
     },
   },
 };
