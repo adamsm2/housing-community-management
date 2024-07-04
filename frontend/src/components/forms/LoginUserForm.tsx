@@ -1,14 +1,14 @@
 import { useTranslation } from "react-i18next";
-import { useContext, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import loginUserValidationSchema from "@/components/forms/schemas/login-user.ts";
 import { FieldError, SubmitHandler, useForm } from "react-hook-form";
-import UserApi from "@/api/user.ts";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { CircularProgress } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import paths from "@/router/paths.ts";
-import { UserContext } from "@/store/UserContext.tsx";
 import FormField from "@/components/forms/FormField.tsx";
+import { useAppDispatch } from "@/hooks/reduxHooks.ts";
+import { loginUser } from "@/redux/authActions.ts";
 import { toast } from "react-toastify";
 
 type FormFieldProps = {
@@ -22,7 +22,7 @@ const LoginUserForm = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const schema = loginUserValidationSchema();
-  const { setCurrentUser } = useContext(UserContext);
+  const dispatch = useAppDispatch();
 
   const {
     register, handleSubmit,
@@ -39,20 +39,16 @@ const LoginUserForm = () => {
     ];
   }, [errors]);
 
-  const onSubmit: SubmitHandler<LoginUserRequest> = (data) => {
+  const onSubmit: SubmitHandler<LoginUserRequest> = async (data) => {
     setIsLoading(true);
-    UserApi.loginUser(data)
-      .then((userData) => {
-        setCurrentUser(userData);
-        toast.success(t("loginSuccess"));
-        navigate(paths.user.root);
-      })
-      .catch((error) => {
-        error.response ? toast.error(t("invalidCredentials")) : toast.error(t("internalError"));
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
+    const response = await dispatch(loginUser(data));
+    if (response.error) {
+      toast.error(t("invalidCredentials"));
+    } else {
+      toast.success(t("loginSuccess"));
+      navigate(paths.user.root);
+    }
+    setIsLoading(false);
   };
 
   const setValues = () => {

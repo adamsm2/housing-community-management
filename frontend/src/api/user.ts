@@ -1,37 +1,23 @@
 import { apiClient } from "./client.ts";
-import localStorageKeys from "@/localstorage-keys.ts";
 
 const userControllerUrl = "/users/";
 const userControllerUrlWithRefreshToken = "/users/token/";
 
-async function registerUser(data: RegisterUserRequest) {
+async function registerUser(registerUserRequest: RegisterUserRequest) {
   const response = await apiClient
-    .post(userControllerUrl + "register", data);
+    .post(userControllerUrl + "register", registerUserRequest);
   return response.data;
 }
 
-async function loginUser(data: LoginUserRequest) {
+async function loginUser(loginUserRequest: LoginUserRequest) {
   const response = await apiClient
-    .post(userControllerUrl + "login", data);
-  const expirationDate = new Date().getTime() + response.data.accessToken.expiration;
-  localStorage.setItem(localStorageKeys.ACCESS_TOKEN_EXPIRATION_DATE, expirationDate.toString());
-  localStorage.setItem(localStorageKeys.ACCESS_TOKEN, response.data.accessToken.jwt);
-  return response.data.userData;
+    .post(userControllerUrl + "login", loginUserRequest);
+  return response.data;
 }
 
 async function logoutUser() {
   await apiClient
     .post(userControllerUrlWithRefreshToken + "logout");
-  localStorage.removeItem(localStorageKeys.ACCESS_TOKEN_EXPIRATION_DATE);
-  localStorage.removeItem(localStorageKeys.ACCESS_TOKEN);
-}
-
-async function refreshToken() {
-  const response = await apiClient
-    .post(userControllerUrlWithRefreshToken + "refreshToken");
-  const expirationDate = new Date().getTime() + response.data.expiration;
-  localStorage.setItem(localStorageKeys.ACCESS_TOKEN_EXPIRATION_DATE, expirationDate.toString());
-  localStorage.setItem(localStorageKeys.ACCESS_TOKEN, response.data.jwt);
 }
 
 async function getCurrentUserData() {
@@ -41,4 +27,9 @@ async function getCurrentUserData() {
 }
 
 
-export default { registerUser, loginUser, logoutUser, refreshToken, getCurrentUserData };
+export default {
+  registerUser,
+  loginUser,
+  logoutUser,
+  getCurrentUserData,
+};

@@ -1,12 +1,13 @@
-import { PropsWithChildren, useContext } from "react";
+import { FC, PropsWithChildren } from "react";
 import { Navigate, Outlet } from "react-router-dom";
 import paths from "@/router/paths.ts";
-import { UserContext } from "@/store/UserContext.tsx";
+import { useAppSelector } from "@/hooks/reduxHooks.ts";
+import { selectAuth } from "@/redux/authSlice.ts";
 
-const AuthRoute: React.FC<PropsWithChildren> = () => {
-  const { userData } = useContext(UserContext);
+const AuthRoute: FC<PropsWithChildren> = () => {
+  const auth = useAppSelector(selectAuth);
 
-  if (userData.role === "") {
+  if (!auth.accessToken) {
     return <Outlet />;
   } else {
     return <Navigate to={paths.user.root} />;
