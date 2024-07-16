@@ -3,23 +3,22 @@ import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { yupResolver } from "@hookform/resolvers/yup";
 import registerUserValidationSchema from "@/components/forms/schemas/register-user.ts";
-import { CircularProgress } from "@mui/material";
-import paths from "@/router/paths.ts";
-import { useNavigate } from "react-router-dom";
-import FormField from "@/components/forms/FormField.tsx";
 import { toast } from "react-toastify";
 import { useAppDispatch } from "@/hooks/reduxHooks.ts";
 import { registerUser } from "@/redux/authActions.ts";
+import AppForm from "@/components/forms/AppForm.tsx";
+import NavigateFormButton from "@/components/ui/NavigateFormButton.tsx";
+import paths from "@/router/paths.ts";
+import SubmitFormButton from "@/components/ui/SubmitFormButton.tsx";
 
 type FormFieldProps = {
   name: keyof RegisterUserRequest;
-  type: string;
+  type: "password" | "text" | "email";
   error: FieldError | undefined;
 }
 
 const RegisterUserForm = () => {
   const { t } = useTranslation();
-  const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const schema = registerUserValidationSchema();
   const dispatch = useAppDispatch();
@@ -62,37 +61,14 @@ const RegisterUserForm = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="mx-auto mt-10 max-w-xl sm:mt-10">
-      <div className="grid grid-cols-1 gap-x-8 gap-y-6">
-        {formFields.map((item) => (
-          <div key={item.name}>
-            <FormField name={item.name} translatedName={t(item.name)} type={item.type} register={register}
-                       error={item.error?.message} />
-          </div>
-        ))}
-      </div>
-      <div className="mt-10">
-        {isLoading ? <div className="text-center mb-0"><CircularProgress /></div> :
-          <>
-            <button
-              type="submit"
-              className="block w-full rounded-md bg-primary px-3.5 py-2.5 text-center text-sm font-semibold text-white shadow-sm hover:bg-primaryHover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primaryHover"
-            >
-              {t("createResidentAccount")}
-            </button>
-            <button
-              type="button"
-              onClick={() => navigate(paths.auth.login)}
-              className="mt-2 block w-full px-3.5 py-2.5 text-center text-sm font-semibold text-textTitle underline hover:text-primaryHover"
-            >
-              {t("backToLoginPage")}
-            </button>
-            <button type="button" onClick={setValues}>Set Values</button>
-          </>}
-      </div>
-    </form>
-  )
-    ;
+    <AppForm formFields={formFields} register={register} onSubmit={handleSubmit(onSubmit)} isLoading={isLoading}>
+      <>
+        <SubmitFormButton name={t("createResidentAccount")} />
+        <NavigateFormButton path={paths.auth.login} name={t("backToLogin")} />
+        <button type="button" onClick={setValues}>Set Values</button>
+      </>
+    </AppForm>
+  );
 };
 
 export default RegisterUserForm;
