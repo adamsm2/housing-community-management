@@ -110,6 +110,13 @@ class UserService implements UserUseCases {
     }
 
     @Override
+    public Boolean isUserVerified(String email) {
+        return userRepository.findByEmail(email)
+                .map(User::isVerified)
+                .orElse(false);
+    }
+
+    @Override
     public void resendVerificationEmail(ResendVerificationEmailRequest resendVerificationEmailRequest) {
         User user = userRepository.findByEmail(resendVerificationEmailRequest.email()).orElseThrow();
         validateVerificationCodeIsExpired(user.getVerificationCode());
@@ -198,7 +205,7 @@ class UserService implements UserUseCases {
         String accessToken = jwtUtils.createJwt(user, jwtSecret, accessTokenExpiration);
         String refreshToken = jwtUtils.createJwt(user, jwtSecret, refreshTokenExpiration);
         return TokenResource.builder()
-                .accessToken(new TokenDetailsResource(accessToken, 10000))
+                .accessToken(new TokenDetailsResource(accessToken, accessTokenExpiration))
                 .refreshToken(new TokenDetailsResource(refreshToken, refreshTokenExpiration))
                 .build();
     }

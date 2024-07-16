@@ -67,6 +67,7 @@ public class SecurityConfig {
                                 "/users/token/refreshToken",
                                 "/test/frontend",
                                 "/users/verify",
+                                "/users/isVerified/{}",
                                 "/users/resend/verification",
                                 "/v3/api-docs/**").permitAll()
                         .requestMatchers(

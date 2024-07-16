@@ -18,6 +18,8 @@ public interface UserUseCases {
 
     void verifyEmail(VerifyEmailRequest verifyEmailRequest);
 
+    Boolean isUserVerified(String email);
+
     void resendVerificationEmail(ResendVerificationEmailRequest resendVerificationEmailRequest);
 
     void logoutUser(String jwt);

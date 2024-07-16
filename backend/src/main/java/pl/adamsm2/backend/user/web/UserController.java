@@ -69,6 +69,11 @@ class UserController {
         return ResponseEntity.ok().build();
     }
 
+    @GetMapping("/isVerified/{email}")
+    ResponseEntity<Boolean> isUserVerified(@PathVariable String email) {
+        return ResponseEntity.ok(userUseCases.isUserVerified(email));
+    }
+
     @PostMapping("/resend/verification")
     ResponseEntity<Void> resendVerificationEmail(@RequestBody @Valid ResendVerificationEmailRequest resendVerificationEmailRequest) {
         userUseCases.resendVerificationEmail(resendVerificationEmailRequest);

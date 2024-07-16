@@ -54,6 +54,7 @@ public class UserSeeder implements Seeder {
                 .password(passwordEncoder.encode(ADMIN_PASSWORD + securityProperties.getPepper()))
                 .firstName("admin")
                 .lastName("admin")
+                .isVerified(true)
                 .role(roleRepository.findByName(ERole.ROLE_ADMIN).orElseThrow())
                 .build();
     }
