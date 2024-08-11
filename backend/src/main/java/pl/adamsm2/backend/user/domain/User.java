@@ -40,7 +40,9 @@ public class User implements UserDetails {
     @ToString.Exclude
     private String password;
 
-    @ManyToOne
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    @EqualsAndHashCode.Exclude
     private Role role;
 
     @Column(nullable = false)
@@ -55,7 +57,7 @@ public class User implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<GrantedAuthority> authorities = new ArrayList<>();
-        authorities.add(new SimpleGrantedAuthority(role.getName().name()));
+        authorities.add(new SimpleGrantedAuthority(role.name()));
         return authorities;
     }
 

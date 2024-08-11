@@ -19,7 +19,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/apartments")
 @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
-public class ApartmentController {
+class ApartmentController {
 
     private final ApartmentUseCases apartmentUseCases;
 

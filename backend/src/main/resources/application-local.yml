@@ -21,5 +21,9 @@ app:
   pepper:
     value: XYZ
 
+email:
+  sender:
+    enabled: false
+
 seeders:
   enabled: true

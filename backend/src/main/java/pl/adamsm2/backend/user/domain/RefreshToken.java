@@ -21,12 +21,16 @@ public class RefreshToken {
     private long id;
 
     @Column(nullable = false, unique = true, length = 1024)
-    private String jwt;
+    String jwt;
+
+    @Column(nullable = false)
+    Instant expiryDate;
 
     @OneToOne
     private User user;
 
-    @Column(nullable = false)
-    private Instant expiryDate;
+    public boolean isExpired() {
+        return expiryDate.isBefore(Instant.now());
+    }
 
 }

@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import pl.adamsm2.backend.user.dto.*;
 import pl.adamsm2.backend.user.service.usecase.UserUseCases;
 
+import java.time.Instant;
 import java.util.Collection;
 import java.util.concurrent.TimeUnit;
 
@@ -29,7 +30,7 @@ class UserController {
     }
 
     @GetMapping("/current")
-    ResponseEntity<UserDataResource> getCurrentUserData() {
+    ResponseEntity<UserResource> getCurrentUserData() {
         return ResponseEntity.ok(userUseCases.getCurrentUserData());
     }
 
@@ -40,21 +41,20 @@ class UserController {
     }
 
     @PostMapping("/login")
-    ResponseEntity<LoginUserResource> loginUser(@RequestBody @Valid LoginUserRequest loginUserRequest) {
-        TokenResource tokenResource = userUseCases.loginUser(loginUserRequest);
-        UserDataResource userDataResource = userUseCases.getCurrentUserData();
-        return getLoginResponseWithTokens(tokenResource, userDataResource);
+    ResponseEntity<AccessTokenResource> loginUser(@RequestBody @Valid LoginUserRequest loginUserRequest) {
+        AuthResource authResource = userUseCases.loginUser(loginUserRequest);
+        return getResponseWithTokens(authResource);
     }
 
     @PostMapping("/token/refreshToken")
-    ResponseEntity<TokenDetailsResource> refreshToken(@Parameter(hidden = true) @CookieValue(name = "refreshToken") String jwt) {
-        TokenResource tokenResource;
+    ResponseEntity<AccessTokenResource> refreshToken(@Parameter(hidden = true) @CookieValue(name = "refreshToken") String jwt) {
+        AuthResource authResource;
         try {
-            tokenResource = userUseCases.refreshToken(jwt);
+            authResource = userUseCases.refreshToken(jwt);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).header(HttpHeaders.SET_COOKIE, getDeleteRefreshTokenCookie(jwt).toString()).build();
         }
-        return getResponseWithTokens(tokenResource);
+        return getResponseWithTokens(authResource);
     }
 
     @PostMapping("/token/logout")
@@ -64,14 +64,14 @@ class UserController {
     }
 
     @PostMapping("/verify")
-    ResponseEntity<Void> verifyUser(@RequestBody @Valid VerifyEmailRequest verifyEmailRequest) {
+    ResponseEntity<Void> verifyUserEmail(@RequestBody @Valid VerifyEmailRequest verifyEmailRequest) {
         userUseCases.verifyEmail(verifyEmailRequest);
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/isVerified/{email}")
-    ResponseEntity<Boolean> isUserVerified(@PathVariable String email) {
-        return ResponseEntity.ok(userUseCases.isUserVerified(email));
+    @GetMapping("/verificationCode/expiration/{email}")
+    ResponseEntity<Instant> getVerificationCodeExpirationDate(@PathVariable String email) {
+        return ResponseEntity.ok(userUseCases.getVerificationCodeExpirationDate(email));
     }
 
     @PostMapping("/resend/verification")
@@ -80,11 +80,11 @@ class UserController {
         return ResponseEntity.ok().build();
     }
 
-    private ResponseCookie getRefreshTokenCookie(TokenResource tokenResource) {
-        return ResponseCookie.from("refreshToken", tokenResource.refreshToken().jwt())
+    private ResponseCookie getRefreshTokenCookie(RefreshTokenResource refreshToken) {
+        return ResponseCookie.from("refreshToken", refreshToken.jwt())
                 .httpOnly(true)
                 .path(ENDPOINTS_USING_REFRESH_TOKEN)
-                .maxAge(TimeUnit.MILLISECONDS.toSeconds(tokenResource.refreshToken().expiration()))
+                .maxAge(TimeUnit.MILLISECONDS.toSeconds(refreshToken.expirationInMs()))
                 .build();
     }
 
@@ -96,15 +96,8 @@ class UserController {
                 .build();
     }
 
-    private ResponseEntity<TokenDetailsResource> getResponseWithTokens(TokenResource tokenResource) {
-        ResponseCookie refreshTokenCookie = getRefreshTokenCookie(tokenResource);
-        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString()).body(tokenResource.accessToken());
-    }
-
-    private ResponseEntity<LoginUserResource> getLoginResponseWithTokens(TokenResource tokenResource, UserDataResource userDataResource) {
-        ResponseCookie refreshTokenCookie = getRefreshTokenCookie(tokenResource);
-        LoginUserResource loginUserResource = new LoginUserResource(tokenResource.accessToken(), userDataResource);
-        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString()).body(loginUserResource);
+    private ResponseEntity<AccessTokenResource> getResponseWithTokens(AuthResource tokenResource) {
+        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, getRefreshTokenCookie(tokenResource.refreshToken()).toString()).body(tokenResource.accessToken());
     }
 
 }

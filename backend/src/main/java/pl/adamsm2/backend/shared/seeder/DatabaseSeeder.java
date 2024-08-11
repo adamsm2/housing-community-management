@@ -13,12 +13,10 @@ import org.springframework.transaction.annotation.Transactional;
 class DatabaseSeeder implements CommandLineRunner {
 
     private final UserSeeder userSeeder;
-    private final RoleSeeder roleSeeder;
     private final ApartmentSeeder apartmentSeeder;
 
     @Override
     public void run(String... args) {
-        roleSeeder.seedDatabase(1);
         userSeeder.seedDatabase(1);
         apartmentSeeder.seedDatabase(5);
     }

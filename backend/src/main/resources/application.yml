@@ -1,23 +1,10 @@
+spring:
+  profiles:
+    active: dev
+
 springdoc:
   swagger-ui:
     tryItOutEnabled: true
     operationsSorter: method
     tagsSorter: alpha
     filter: true
-
-spring:
-  mail:
-    verificationCodeExpiration: 600000
-    host: smtp.gmail.com
-    port: 587
-    username: ${MAIL_USERNAME}
-    password: ${MAIL_PASSWORD}
-    properties:
-      mail:
-        smtp:
-          auth: true
-          connectiontimeout: 5000
-          timeout: 3000
-          write-timeout: 5000
-          starttls:
-            enable: true

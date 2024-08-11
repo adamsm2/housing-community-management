@@ -7,6 +7,20 @@ spring:
     open-in-view: false
     hibernate:
       ddl-auto: create-drop
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          connectiontimeout: 5000
+          timeout: 3000
+          write-timeout: 5000
+          starttls:
+            enable: true
 
 app:
   jwt:
@@ -17,6 +31,10 @@ app:
     allowed-origins: ${CORS_ALLOWED_ORIGINS}
   pepper:
     value: ${PEPPER}
+
+email:
+  sender:
+    enabled: true
 
 seeders:
   enabled: true

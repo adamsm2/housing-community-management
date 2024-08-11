@@ -2,25 +2,20 @@ package pl.adamsm2.backend.user.service.usecase.internal;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import pl.adamsm2.backend.security.SecurityProperties;
-import pl.adamsm2.backend.security.jwt.JwtUtils;
-import pl.adamsm2.backend.shared.exception.UserAccountNotVerifiedException;
+import pl.adamsm2.backend.security.JwtUtils;
+import pl.adamsm2.backend.shared.exception.UserEmailNotVerifiedException;
 import pl.adamsm2.backend.user.domain.*;
 import pl.adamsm2.backend.user.domain.repository.RefreshTokenRepository;
-import pl.adamsm2.backend.user.domain.repository.RoleRepository;
 import pl.adamsm2.backend.user.domain.repository.UserRepository;
 import pl.adamsm2.backend.user.dto.*;
 import pl.adamsm2.backend.user.service.mapper.UserMapper;
+import pl.adamsm2.backend.user.service.usecase.Authenticator;
+import pl.adamsm2.backend.user.service.usecase.MailUseCases;
 import pl.adamsm2.backend.user.service.usecase.UserUseCases;
 
-import java.security.SecureRandom;
 import java.time.Instant;
 import java.util.Collection;
 
@@ -29,40 +24,29 @@ import java.util.Collection;
 class UserService implements UserUseCases {
 
     private final UserRepository userRepository;
-    private final RoleRepository roleRepository;
     private final RefreshTokenRepository refreshTokenRepository;
     private final UserMapper userMapper;
-    private final PasswordEncoder passwordEncoder;
-    private final SecurityProperties securityProperties;
-    private final AuthenticationManager authenticationManager;
+    private final Authenticator authenticator;
     private final JwtUtils jwtUtils;
-    private final MailService mailService;
+    private final MailUseCases mailService;
 
     @Override
     @Transactional
     public void registerUser(RegisterUserRequest registerUserRequest) {
-        validateUserEmail(registerUserRequest.email());
+        validateUserDoesntExist(registerUserRequest.email());
         User user = userMapper.mapRegisterUserRequestToUser(registerUserRequest);
-        VerificationCode verificationCode = generateVerificationCode();
-        setRoleForNewUser(user);
-        user.setPassword(getEncodedPassword(registerUserRequest.password()));
-        user.setVerificationCode(verificationCode);
         userRepository.save(user);
-        mailService.sendVerificationEmail(user.getEmail(), verificationCode.getCode());
+        sendVerificationMail(user);
     }
 
     @Override
     @Transactional
-    public TokenResource loginUser(LoginUserRequest loginUserRequest) {
-        Authentication authentication = authenticationManager
-                .authenticate(new UsernamePasswordAuthenticationToken(loginUserRequest.email(), loginUserRequest.password() + securityProperties.getPepper()));
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        User user = (User) authentication.getPrincipal();
-        validateUserAccountIsVerified(user);
-        TokenResource tokenResource = getTokenResource(user);
-        refreshTokenRepository.findByUser(user).ifPresent(this::deleteOldRefreshToken);
-        saveNewRefreshToken(user, tokenResource);
-        return tokenResource;
+    public AuthResource loginUser(LoginUserRequest loginUserRequest) {
+        User user = authenticator.authenticateUser(loginUserRequest);
+        validateUserEmailIsVerified(user);
+        Token newRefreshToken = jwtUtils.createRefreshToken(user);
+        saveNewRefreshToken(user, newRefreshToken);
+        return getAuthResource(user, newRefreshToken);
     }
 
     @Override
@@ -76,101 +60,108 @@ class UserService implements UserUseCases {
 
     @Override
     @Transactional(readOnly = true)
-    public UserDataResource getCurrentUserData() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        User user = authentication.getPrincipal() instanceof User principal ? principal : null;
-        if (user != null) {
-            return userMapper.mapUserToUserDataResource(user);
-        } else {
-            throw new IllegalStateException("User not found");
-        }
+    public UserResource getCurrentUserData() {
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return userMapper.mapUserToUserResource(user);
     }
 
     @Override
     @Transactional
-    public TokenResource refreshToken(String jwt) {
+    public AuthResource refreshToken(String jwt) {
         RefreshToken oldRefreshToken = refreshTokenRepository.findByJwt(jwt).orElseThrow();
         validateRefreshTokenIsNotExpired(oldRefreshToken);
         User user = oldRefreshToken.getUser();
-        TokenResource tokenResource = getTokenResource(user);
-        deleteOldRefreshToken(oldRefreshToken);
-        saveNewRefreshToken(user, tokenResource);
-        return tokenResource;
+        Token newRefreshToken = jwtUtils.createRefreshToken(user);
+        updateRefreshToken(oldRefreshToken, newRefreshToken);
+        return getAuthResource(user, newRefreshToken);
     }
 
     @Override
+    @Transactional
     public void verifyEmail(VerifyEmailRequest verifyEmailRequest) {
         User user = userRepository.findByEmail(verifyEmailRequest.email()).orElseThrow();
         VerificationCode verificationCode = user.getVerificationCode();
-        validateUserIsNotVerified(user);
+        validateUserEmailIsNotVerified(user);
         validateVerificationCodeIsNotExpired(verificationCode);
         validateVerificationCodeIsValid(verificationCode.getCode(), verifyEmailRequest.code());
         user.setVerified(true);
-        userRepository.save(user);
     }
 
     @Override
-    public Boolean isUserVerified(String email) {
-        return userRepository.findByEmail(email)
-                .map(User::isVerified)
-                .orElse(false);
+    @Transactional(readOnly = true)
+    public Instant getVerificationCodeExpirationDate(String email) {
+        User user = userRepository.findByEmail(email).orElseThrow();
+        validateUserEmailIsNotVerified(user);
+        return user.getVerificationCode().getExpirationDate();
     }
 
     @Override
+    @Transactional
     public void resendVerificationEmail(ResendVerificationEmailRequest resendVerificationEmailRequest) {
         User user = userRepository.findByEmail(resendVerificationEmailRequest.email()).orElseThrow();
+        validateUserEmailIsNotVerified(user);
         validateVerificationCodeIsExpired(user.getVerificationCode());
-        VerificationCode verificationCode = generateVerificationCode();
-        user.setVerificationCode(verificationCode);
-        userRepository.save(user);
-        mailService.sendVerificationEmail(user.getEmail(), verificationCode.getCode());
+        user.setVerificationCode(new VerificationCode());
+        sendVerificationMail(user);
     }
 
     @Override
     @Transactional
     public void logoutUser(String jwt) {
-        final RefreshToken refreshToken = refreshTokenRepository.findByJwt(jwt).orElseThrow();
+        RefreshToken refreshToken = refreshTokenRepository.findByJwt(jwt).orElseThrow();
         refreshTokenRepository.delete(refreshToken);
     }
 
-    private void validateUserEmail(String email) {
+    private AuthResource getAuthResource(User user, Token refreshToken) {
+        return AuthResource.builder()
+                .accessToken(new AccessTokenResource(jwtUtils.createAccessToken(user).getJwt()))
+                .refreshToken(new RefreshTokenResource(refreshToken.getJwt(), refreshToken.getExpirationInMs()))
+                .build();
+    }
+
+    private void sendVerificationMail(User user) {
+        String subject = "Verification code";
+        String text = "Your verification code is: " + user.getVerificationCode().getCode() + "\nThis code will expire in 10 minutes";
+        MailMessage mailMessage = new MailMessage(subject, text);
+        mailService.send(user.getEmail(), mailMessage);
+    }
+
+    private void saveNewRefreshToken(User user, Token newToken) {
+        Instant newExpiryDate = Instant.now().plusMillis(newToken.getExpirationInMs());
+        refreshTokenRepository.findByUser(user).ifPresentOrElse(refreshToken -> updateRefreshToken(refreshToken, newToken),
+                () -> refreshTokenRepository.save(RefreshToken.builder()
+                        .jwt(newToken.getJwt())
+                        .expiryDate(newExpiryDate)
+                        .user(user)
+                        .build())
+        );
+    }
+
+    private void updateRefreshToken(RefreshToken refreshToken, Token newToken) {
+        refreshToken.setJwt(newToken.getJwt());
+        refreshToken.setExpiryDate(Instant.now().plusMillis(newToken.getExpirationInMs()));
+    }
+
+    private void validateUserDoesntExist(String email) {
         userRepository.findByEmail(email).ifPresent(user -> {
             if (user.isVerified()) {
                 throw new IllegalStateException("User with email: " + email + " already exists");
             } else {
-                throw new UserAccountNotVerifiedException("User account is not enabled");
+                throw new UserEmailNotVerifiedException("User account is not enabled");
             }
         });
     }
 
-    private RefreshToken getNewRefreshToken(User user, String jwt) {
-        return RefreshToken.builder()
-                .user(user)
-                .jwt(jwt)
-                .expiryDate(Instant.now().plusMillis(securityProperties.getRefreshTokenExpiration()))
-                .build();
-    }
-
-    private void saveNewRefreshToken(User user, TokenResource tokenResource) {
-        RefreshToken newRefreshToken = getNewRefreshToken(user, tokenResource.refreshToken().jwt());
-        refreshTokenRepository.save(newRefreshToken);
-    }
-
-    private void deleteOldRefreshToken(RefreshToken oldRefreshToken) {
-        refreshTokenRepository.delete(oldRefreshToken);
-        refreshTokenRepository.flush();
-    }
-
     private void validateRefreshTokenIsNotExpired(RefreshToken refreshToken) {
-        if (refreshToken.getExpiryDate().isBefore(Instant.now())) {
+        if (refreshToken.isExpired()) {
             refreshTokenRepository.delete(refreshToken);
             throw new IllegalStateException("Refresh token has expired");
         }
     }
 
-    private void validateUserIsNotVerified(User user) {
+    private void validateUserEmailIsNotVerified(User user) {
         if (user.isVerified()) {
-            throw new IllegalStateException("User is already verified");
+            throw new IllegalStateException("User's Email is already verified");
         }
     }
 
@@ -192,51 +183,10 @@ class UserService implements UserUseCases {
         }
     }
 
-    private void validateUserAccountIsVerified(User user) {
+    private void validateUserEmailIsVerified(User user) {
         if (!user.isVerified()) {
-            throw new UserAccountNotVerifiedException("User account is not verified");
+            throw new UserEmailNotVerifiedException("User's email is not verified");
         }
-    }
-
-    private TokenResource getTokenResource(User user) {
-        long accessTokenExpiration = securityProperties.getAccessTokenExpiration();
-        long refreshTokenExpiration = securityProperties.getRefreshTokenExpiration();
-        String jwtSecret = securityProperties.getJwtSecret();
-        String accessToken = jwtUtils.createJwt(user, jwtSecret, accessTokenExpiration);
-        String refreshToken = jwtUtils.createJwt(user, jwtSecret, refreshTokenExpiration);
-        return TokenResource.builder()
-                .accessToken(new TokenDetailsResource(accessToken, accessTokenExpiration))
-                .refreshToken(new TokenDetailsResource(refreshToken, refreshTokenExpiration))
-                .build();
-    }
-
-    private void setRoleForNewUser(User user) {
-        final Role role = roleRepository.findByName(ERole.ROLE_USER).orElseThrow();
-        user.setRole(role);
-    }
-
-    private String getEncodedPassword(String password) {
-        String passwordWithPepper = password + securityProperties.getPepper();
-        return passwordEncoder.encode(passwordWithPepper);
-    }
-
-    private VerificationCode generateVerificationCode() {
-        String code = generateRandomCode();
-        return VerificationCode.builder()
-                .code(code)
-                .expirationDate(Instant.now().plusMillis(securityProperties.getEmailVerificationCodeExpiration()))
-                .build();
-    }
-
-    private String generateRandomCode() {
-        StringBuilder sb = new StringBuilder();
-        SecureRandom random = new SecureRandom();
-        String chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-        for (int i = 0; i < 6; i++) {
-            int index = random.nextInt(chars.length());
-            sb.append(chars.charAt(index));
-        }
-        return sb.toString();
     }
 
 }

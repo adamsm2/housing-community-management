@@ -15,7 +15,7 @@ import pl.adamsm2.backend.apartment.service.usecase.UtilityPriceUseCases;
 @RestController
 @RequestMapping("/utilityPrices")
 @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
-public class UtilityPriceController {
+class UtilityPriceController {
 
     private final UtilityPriceUseCases utilityPriceUseCases;
 

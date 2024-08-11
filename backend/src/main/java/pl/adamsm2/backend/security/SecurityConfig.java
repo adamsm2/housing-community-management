@@ -12,31 +12,32 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfigurationSource;
-import pl.adamsm2.backend.security.jwt.JwtFilter;
-import pl.adamsm2.backend.user.service.CustomUserDetailsService;
+import org.springframework.web.filter.OncePerRequestFilter;
 
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
-public class SecurityConfig {
+class SecurityConfig {
 
-    private final CustomUserDetailsService customUserDetailsService;
-    private final JwtFilter jwtFilter;
-    private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
+    private final UserDetailsService customUserDetailsService;
+    private final OncePerRequestFilter jwtFilter;
+    private final AuthenticationEntryPoint customAuthenticationEntryPoint;
     private final CorsConfigurationSource corsConfigurationSource;
 
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
+    AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
         return authConfig.getAuthenticationManager();
     }
 
     @Bean
-    public DaoAuthenticationProvider authenticationProvider() {
+    DaoAuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
         authProvider.setUserDetailsService(customUserDetailsService);
         authProvider.setPasswordEncoder(passwordEncoder());
@@ -44,19 +45,19 @@ public class SecurityConfig {
     }
 
     @Bean
-    public PasswordEncoder passwordEncoder() {
+    PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
     @Bean
-    public RoleHierarchy roleHierarchy() {
+    RoleHierarchy roleHierarchy() {
         RoleHierarchyImpl hierarchy = new RoleHierarchyImpl();
         hierarchy.setHierarchy("ROLE_ADMIN > ROLE_STAFF > ROLE_RESIDENT > ROLE_USER");
         return hierarchy;
     }
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(
@@ -67,7 +68,7 @@ public class SecurityConfig {
                                 "/users/token/refreshToken",
                                 "/test/frontend",
                                 "/users/verify",
-                                "/users/isVerified/{}",
+                                "/users/verificationCode/expiration/{}",
                                 "/users/resend/verification",
                                 "/v3/api-docs/**").permitAll()
                         .requestMatchers(

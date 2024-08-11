@@ -1,4 +1,4 @@
-package pl.adamsm2.backend.user.service;
+package pl.adamsm2.backend.user.service.usecase.internal;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -10,14 +10,15 @@ import pl.adamsm2.backend.user.domain.repository.UserRepository;
 
 @Service
 @RequiredArgsConstructor
-public class CustomUserDetailsService implements UserDetailsService {
+class CustomUserDetailsService implements UserDetailsService {
 
     private final UserRepository userRepository;
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return userRepository.findByEmail(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User with email: " + username + " not found"));
     }
+
 }

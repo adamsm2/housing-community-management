@@ -63,8 +63,8 @@ class RestResponseEntityExceptionHandler {
         return createResponse(exception.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    @ExceptionHandler(UserAccountNotVerifiedException.class)
-    public ResponseEntity<Map<String, List<String>>> handleUserAccountNotEnabledException(UserAccountNotVerifiedException exception) {
+    @ExceptionHandler(UserEmailNotVerifiedException.class)
+    public ResponseEntity<Map<String, List<String>>> handleUserAccountNotEnabledException(UserEmailNotVerifiedException exception) {
         return createResponse(exception.getMessage(), HttpStatus.FORBIDDEN);
     }
 

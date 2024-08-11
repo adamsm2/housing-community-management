@@ -1,7 +1,7 @@
 package pl.adamsm2.backend.user.dto;
 
-public record TokenDetailsResource(
+public record RefreshTokenResource(
         String jwt,
-        long expiration
+        long expirationInMs
 ) {
 }

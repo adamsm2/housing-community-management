@@ -2,23 +2,24 @@ package pl.adamsm2.backend.user.service.usecase;
 
 import pl.adamsm2.backend.user.dto.*;
 
+import java.time.Instant;
 import java.util.Collection;
 
 public interface UserUseCases {
 
     void registerUser(RegisterUserRequest registerUserRequest);
 
-    TokenResource loginUser(LoginUserRequest loginUserRequest);
+    AuthResource loginUser(LoginUserRequest loginUserRequest);
 
     Collection<UserResource> getUsers();
 
-    UserDataResource getCurrentUserData();
+    UserResource getCurrentUserData();
 
-    TokenResource refreshToken(String jwt);
+    AuthResource refreshToken(String jwt);
 
     void verifyEmail(VerifyEmailRequest verifyEmailRequest);
 
-    Boolean isUserVerified(String email);
+    Instant getVerificationCodeExpirationDate(String email);
 
     void resendVerificationEmail(ResendVerificationEmailRequest resendVerificationEmailRequest);
 

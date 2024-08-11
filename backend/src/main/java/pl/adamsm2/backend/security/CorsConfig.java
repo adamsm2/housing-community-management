@@ -11,7 +11,7 @@ import java.util.Arrays;
 import java.util.List;
 
 @Configuration
-public class CorsConfig {
+class CorsConfig {
 
     private static final String MATCH_ALL_PATTERN = "/**";
     private static final List<String> ALLOWED_METHODS = List.of("GET", "POST", "DELETE", "PATCH", "OPTIONS");

@@ -39,7 +39,6 @@ class ApartmentService implements ApartmentUseCases {
         Apartment apartment = apartmentRepository.findByNumber(changeApartmentOwnerRequest.apartmentNumber()).orElseThrow();
         User user = userRepository.findByEmail(changeApartmentOwnerRequest.newOwnerEmail()).orElseThrow();
         apartment.setOwner(user);
-        apartmentRepository.save(apartment);
     }
 
     @Override
