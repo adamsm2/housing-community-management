@@ -110,6 +110,15 @@
             <artifactId>postgresql</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-webflux</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.projectreactor</groupId>
+            <artifactId>reactor-test</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -146,6 +155,7 @@
                             <sources>
                                 <source>src/test/java/unit</source>
                                 <source>src/test/java/resources</source>
+                                <source>src/test/java/shared</source>
                             </sources>
                         </configuration>
                     </execution>

@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.adamsm2.backend.security.JwtUtils;
 import pl.adamsm2.backend.shared.exception.UserEmailNotVerifiedException;
+import pl.adamsm2.backend.shared.utils.DateTimeProvider;
 import pl.adamsm2.backend.user.domain.*;
 import pl.adamsm2.backend.user.domain.repository.RefreshTokenRepository;
 import pl.adamsm2.backend.user.domain.repository.UserRepository;
@@ -127,7 +128,7 @@ class UserService implements UserUseCases {
     }
 
     private void saveNewRefreshToken(User user, Token newToken) {
-        Instant newExpiryDate = Instant.now().plusMillis(newToken.getExpirationInMs());
+        Instant newExpiryDate = DateTimeProvider.INSTANCE.now().plusMillis(newToken.getExpirationInMs());
         refreshTokenRepository.findByUser(user).ifPresentOrElse(refreshToken -> updateRefreshToken(refreshToken, newToken),
                 () -> refreshTokenRepository.save(RefreshToken.builder()
                         .jwt(newToken.getJwt())
@@ -139,7 +140,7 @@ class UserService implements UserUseCases {
 
     private void updateRefreshToken(RefreshToken refreshToken, Token newToken) {
         refreshToken.setJwt(newToken.getJwt());
-        refreshToken.setExpiryDate(Instant.now().plusMillis(newToken.getExpirationInMs()));
+        refreshToken.setExpiryDate(DateTimeProvider.INSTANCE.now().plusMillis(newToken.getExpirationInMs()));
     }
 
     private void validateUserDoesntExist(String email) {
@@ -166,13 +167,13 @@ class UserService implements UserUseCases {
     }
 
     private void validateVerificationCodeIsNotExpired(VerificationCode verificationCode) {
-        if (verificationCode.getExpirationDate().isBefore(Instant.now())) {
+        if (verificationCode.getExpirationDate().isBefore(DateTimeProvider.INSTANCE.now())) {
             throw new IllegalStateException("Verification code has expired");
         }
     }
 
     private void validateVerificationCodeIsExpired(VerificationCode verificationCode) {
-        if (verificationCode.getExpirationDate().isAfter(Instant.now())) {
+        if (verificationCode.getExpirationDate().isAfter(DateTimeProvider.INSTANCE.now())) {
             throw new IllegalStateException("Previous verification code is still valid");
         }
     }

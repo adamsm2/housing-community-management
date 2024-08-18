@@ -16,17 +16,20 @@ import pl.adamsm2.backend.user.service.usecase.UserUseCases;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
-import static pl.adamsm2.backend.user.UserTestDataProvider.getUserWithGivenEmail;
-import static pl.adamsm2.backend.user.UserTestDataProvider.registerUserRequest;
+import static pl.adamsm2.backend.UserTestDataProvider.getUserWithGivenEmail;
+import static pl.adamsm2.backend.UserTestDataProvider.registerUserRequest;
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceTest {
+
+    private static final long REFRESH_TOKEN_EXPIRATION_IN_MS = 10000;
+    private static final long ACCESS_TOKEN_EXPIRATION_IN_MS = 1000;
 
     private final InMemoryUserRepository userRepository = new InMemoryUserRepository();
     private final InMemoryRefreshTokenRepository refreshTokenRepository = new InMemoryRefreshTokenRepository();
     private final UserMapper userMapper = new UserMapperProvider().getUserMapper();
     private final Authenticator authenticator;
-    private final JwtUtils jwtUtils = new JwtUtils("abc", 1000, 10000);
+    private final JwtUtils jwtUtils = new JwtUtils("abc", ACCESS_TOKEN_EXPIRATION_IN_MS, REFRESH_TOKEN_EXPIRATION_IN_MS);
     private final MailUseCases mailService;
     private final UserUseCases userService;
 

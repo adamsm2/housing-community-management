@@ -1,6 +1,10 @@
 spring:
   datasource:
     url: jdbc:tc:postgresql:latest:///test
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: create-drop
 
 app:
   jwt:

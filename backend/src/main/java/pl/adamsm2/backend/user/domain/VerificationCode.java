@@ -2,6 +2,7 @@ package pl.adamsm2.backend.user.domain;
 
 import jakarta.persistence.Embeddable;
 import lombok.Value;
+import pl.adamsm2.backend.shared.utils.DateTimeProvider;
 
 import java.security.SecureRandom;
 import java.time.Instant;
@@ -17,11 +18,11 @@ public class VerificationCode {
 
     public VerificationCode() {
         this.code = generateRandomCode();
-        this.expirationDate = Instant.now().plusSeconds(VERIFICATION_CODE_EXPIRATION_SECONDS);
+        this.expirationDate = DateTimeProvider.INSTANCE.now().plusSeconds(VERIFICATION_CODE_EXPIRATION_SECONDS);
     }
 
     public boolean isExpired() {
-        return expirationDate.isBefore(Instant.now());
+        return expirationDate.isBefore(DateTimeProvider.INSTANCE.now());
     }
 
     private String generateRandomCode() {

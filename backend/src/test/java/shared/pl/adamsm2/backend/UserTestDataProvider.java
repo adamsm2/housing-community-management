@@ -1,4 +1,4 @@
-package pl.adamsm2.backend.user;
+package pl.adamsm2.backend;
 
 import pl.adamsm2.backend.user.domain.Role;
 import pl.adamsm2.backend.user.domain.User;
@@ -12,6 +12,16 @@ public class UserTestDataProvider {
     private static final String LAST_NAME = "Adam";
 
     public static final RegisterUserRequest registerUserRequest = getSampleRegisterUserRequest();
+
+    public static User getSampleUser() {
+        return User.builder()
+                .email(EMAIL)
+                .password(PASSWORD)
+                .firstName(FIRST_NAME)
+                .lastName(LAST_NAME)
+                .role(Role.ROLE_USER)
+                .build();
+    }
 
     public static User getUserWithGivenEmail(String email) {
         return User.builder()

@@ -2,6 +2,7 @@ package pl.adamsm2.backend.user.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
+import pl.adamsm2.backend.shared.utils.DateTimeProvider;
 
 import java.time.Instant;
 
@@ -30,7 +31,7 @@ public class RefreshToken {
     private User user;
 
     public boolean isExpired() {
-        return expiryDate.isBefore(Instant.now());
+        return expiryDate.isBefore(DateTimeProvider.INSTANCE.now());
     }
 
 }
