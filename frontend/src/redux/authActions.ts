@@ -15,7 +15,7 @@ export const loginUser = createAsyncThunk(
   LOGIN_USER,
   async (loginUserRequest: LoginUserRequest) => {
     const responseData = await UserApi.loginUser(loginUserRequest);
-    localStorage.setItem(localStorageKeys.ACCESS_TOKEN, responseData.accessToken.jwt);
+    localStorage.setItem(localStorageKeys.ACCESS_TOKEN, responseData.jwt);
     return responseData;
   },
 );

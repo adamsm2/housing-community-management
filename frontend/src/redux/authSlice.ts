@@ -26,8 +26,7 @@ export const authSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(loginUser.fulfilled, (state, action) => {
-        state.user = action.payload.userData;
-        state.accessToken = action.payload.accessToken.jwt;
+        state.accessToken = action.payload.jwt;
       })
       .addCase(logoutUser.fulfilled, (state) => {
         state.user = undefined;

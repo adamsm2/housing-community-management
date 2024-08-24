@@ -6,7 +6,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { useNavigate } from "react-router-dom";
 import paths from "@/router/paths.ts";
 import { useAppDispatch } from "@/hooks/reduxHooks.ts";
-import { loginUser } from "@/redux/authActions.ts";
+import { getCurrentUserData, loginUser } from "@/redux/authActions.ts";
 import { toast } from "react-toastify";
 import AppForm from "@/components/forms/AppForm.tsx";
 import SubmitFormButton from "@/components/ui/SubmitFormButton.tsx";
@@ -42,11 +42,12 @@ const LoginUserForm = () => {
 
   const onSubmit: SubmitHandler<LoginUserRequest> = async (data) => {
     setIsLoading(true);
-    const response = await dispatch(loginUser(data));
-    if (response.error) {
+    const loginResponse = await dispatch(loginUser(data));
+    if (loginResponse.error) {
       toast.error(t("invalidCredentials"));
     } else {
       toast.success(t("loginSuccess"));
+      await dispatch(getCurrentUserData());
       navigate(paths.user.root);
     }
     setIsLoading(false);
