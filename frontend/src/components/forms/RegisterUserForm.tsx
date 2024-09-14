@@ -8,8 +8,9 @@ import { useAppDispatch } from "@/hooks/reduxHooks.ts";
 import { registerUser } from "@/redux/authActions.ts";
 import AppForm from "@/components/forms/AppForm.tsx";
 import NavigateFormButton from "@/components/ui/NavigateFormButton.tsx";
-import paths from "@/router/paths.ts";
+import paths, { getPathWithParams } from "@/router/paths.ts";
 import SubmitFormButton from "@/components/ui/SubmitFormButton.tsx";
+import { useNavigate } from "react-router-dom";
 
 type FormFieldProps = {
   name: keyof RegisterUserRequest;
@@ -22,6 +23,7 @@ const RegisterUserForm = () => {
   const [isLoading, setIsLoading] = useState(false);
   const schema = registerUserValidationSchema();
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
 
   const {
     register, handleSubmit,
@@ -47,6 +49,7 @@ const RegisterUserForm = () => {
     if (response.error) {
       toast.error(t("userExists"));
     } else {
+      navigate(getPathWithParams(paths.auth.verifyEmail, { email: data.email }));
       toast.success(t("registeredSuccessfully"));
     }
     setIsLoading(false);

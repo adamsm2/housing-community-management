@@ -6,6 +6,7 @@ import AuthRoute from "@/router/AuthRoute.tsx";
 import paths from "@/router/paths.ts";
 import RootLayout from "@/components/layout/RootLayout.tsx";
 import HomePage from "@/pages/Home/HomePage.tsx";
+import VerifyEmailPage from "@/pages/Auth/VerifyEmailPage.tsx";
 
 const router = createBrowserRouter([
   {
@@ -21,6 +22,7 @@ const router = createBrowserRouter([
         children: [
           { path: paths.auth.login, element: <LoginPage /> },
           { path: paths.auth.register, element: <RegisterPage /> },
+          { path: paths.auth.verifyEmail, element: <VerifyEmailPage /> },
         ],
       },
       { path: paths.announcements, element: <div className="mt-36">Announcement</div> },

@@ -79,13 +79,16 @@ class UserService implements UserUseCases {
 
     @Override
     @Transactional
-    public void verifyEmail(VerifyEmailRequest verifyEmailRequest) {
+    public AuthResource verifyEmail(VerifyEmailRequest verifyEmailRequest) {
         User user = userRepository.findByEmail(verifyEmailRequest.email()).orElseThrow();
         VerificationCode verificationCode = user.getVerificationCode();
         validateUserEmailIsNotVerified(user);
         validateVerificationCodeIsNotExpired(verificationCode);
         validateVerificationCodeIsValid(verificationCode.getCode(), verifyEmailRequest.code());
         user.setVerified(true);
+        Token newRefreshToken = jwtUtils.createRefreshToken(user);
+        saveNewRefreshToken(user, newRefreshToken);
+        return getAuthResource(user, newRefreshToken);
     }
 
     @Override

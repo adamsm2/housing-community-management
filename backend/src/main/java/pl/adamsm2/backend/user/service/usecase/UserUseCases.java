@@ -17,7 +17,7 @@ public interface UserUseCases {
 
     AuthResource refreshToken(String jwt);
 
-    void verifyEmail(VerifyEmailRequest verifyEmailRequest);
+    AuthResource verifyEmail(VerifyEmailRequest verifyEmailRequest);
 
     Instant getVerificationCodeExpirationDate(String email);
 

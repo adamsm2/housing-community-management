@@ -4,9 +4,9 @@ import loginUserValidationSchema from "@/components/forms/schemas/login-user.ts"
 import { FieldError, SubmitHandler, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useNavigate } from "react-router-dom";
-import paths from "@/router/paths.ts";
+import paths, { getPathWithParams } from "@/router/paths.ts";
 import { useAppDispatch } from "@/hooks/reduxHooks.ts";
-import { getCurrentUserData, loginUser } from "@/redux/authActions.ts";
+import { loginUser } from "@/redux/authActions.ts";
 import { toast } from "react-toastify";
 import AppForm from "@/components/forms/AppForm.tsx";
 import SubmitFormButton from "@/components/ui/SubmitFormButton.tsx";
@@ -44,10 +44,13 @@ const LoginUserForm = () => {
     setIsLoading(true);
     const loginResponse = await dispatch(loginUser(data));
     if (loginResponse.error) {
+      if (loginResponse.error.message.endsWith("403")) {
+        navigate(getPathWithParams(paths.auth.verifyEmail, { email: data.email }));
+        return;
+      }
       toast.error(t("invalidCredentials"));
     } else {
       toast.success(t("loginSuccess"));
-      await dispatch(getCurrentUserData());
       navigate(paths.user.root);
     }
     setIsLoading(false);

@@ -1,7 +1,14 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { GET_CURRENT_USER_DATA, LOGIN_USER, LOGOUT_USER, REGISTER_USER } from "@/redux/authConstants.ts";
+import {
+  GET_CURRENT_USER_DATA,
+  LOGIN_USER,
+  LOGOUT_USER,
+  REGISTER_USER,
+  VERIFY_USER_EMAIL,
+} from "@/redux/authConstants.ts";
 import localStorageKeys from "@/localstorage-keys.ts";
 import UserApi from "@/api/user.ts";
+import { VerifyEmailRequest } from "@/api/dto/VerifyEmailRequest.ts";
 
 
 export const registerUser = createAsyncThunk(
@@ -13,9 +20,10 @@ export const registerUser = createAsyncThunk(
 
 export const loginUser = createAsyncThunk(
   LOGIN_USER,
-  async (loginUserRequest: LoginUserRequest) => {
+  async (loginUserRequest: LoginUserRequest, { dispatch }) => {
     const responseData = await UserApi.loginUser(loginUserRequest);
     localStorage.setItem(localStorageKeys.ACCESS_TOKEN, responseData.jwt);
+    await dispatch(getCurrentUserData());
     return responseData;
   },
 );
@@ -32,5 +40,15 @@ export const getCurrentUserData = createAsyncThunk(
   GET_CURRENT_USER_DATA,
   async () => {
     return await UserApi.getCurrentUserData();
+  },
+);
+
+export const verifyUserEmail = createAsyncThunk(
+  VERIFY_USER_EMAIL,
+  async (verifyUserEmailRequest: VerifyEmailRequest, { dispatch }) => {
+    const responseData = await UserApi.verifyUserEmail(verifyUserEmailRequest);
+    localStorage.setItem(localStorageKeys.ACCESS_TOKEN, responseData.jwt);
+    await dispatch(getCurrentUserData());
+    return responseData;
   },
 );

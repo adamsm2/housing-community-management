@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "@/redux/store.ts";
-import { getCurrentUserData, loginUser, logoutUser } from "@/redux/authActions.ts";
+import { getCurrentUserData, loginUser, logoutUser, verifyUserEmail } from "@/redux/authActions.ts";
 
 interface AuthState {
   user?: User;
@@ -26,6 +26,9 @@ export const authSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(loginUser.fulfilled, (state, action) => {
+        state.accessToken = action.payload.jwt;
+      })
+      .addCase(verifyUserEmail.fulfilled, (state, action) => {
         state.accessToken = action.payload.jwt;
       })
       .addCase(logoutUser.fulfilled, (state) => {

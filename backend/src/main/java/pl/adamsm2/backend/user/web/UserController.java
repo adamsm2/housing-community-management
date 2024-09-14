@@ -64,9 +64,9 @@ class UserController {
     }
 
     @PostMapping("/verify")
-    ResponseEntity<Void> verifyUserEmail(@RequestBody @Valid VerifyEmailRequest verifyEmailRequest) {
-        userUseCases.verifyEmail(verifyEmailRequest);
-        return ResponseEntity.ok().build();
+    ResponseEntity<AccessTokenResource> verifyUserEmail(@RequestBody @Valid VerifyEmailRequest verifyEmailRequest) {
+        AuthResource authResource = userUseCases.verifyEmail(verifyEmailRequest);
+        return getResponseWithTokens(authResource);
     }
 
     @GetMapping("/verificationCode/expiration/{email}")
