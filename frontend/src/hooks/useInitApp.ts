@@ -50,7 +50,7 @@ const useInitAxiosInterceptors = () => {
           }
           return Promise.reject(Error("Internal error"));
         } else if (errorResponse.status !== 401 || !accessToken || !isExpired(accessToken)) {
-          return Promise.reject(Error(error));
+          return Promise.reject(error);
         }
         apiClient.interceptors.response.eject(interceptor);
 

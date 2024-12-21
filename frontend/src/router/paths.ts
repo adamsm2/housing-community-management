@@ -11,6 +11,14 @@ const paths = {
   user: {
     root: "/UserPanel",
     meters: "/UserPanel/meters",
+    upcomingCharges: "/UserPanel/upcomingCharges",
+  },
+  admin: {
+    root: "/AdminPanel",
+    createApartment: "/AdminPanel/createApartment",
+    createAnnouncement: "/AdminPanel/createAnnouncement",
+    setUtilityPrices: "/AdminPanel/setUtilityPrices",
+    updateMeterReadings: "/AdminPanel/updateMeterReadings",
   },
 };
 

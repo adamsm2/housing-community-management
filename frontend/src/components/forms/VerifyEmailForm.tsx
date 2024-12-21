@@ -34,7 +34,7 @@ const VerifyEmailForm = ({ email }: VerifyEmailFormProps) => {
       toast.error(t("invalidCodeOrExpired"));
     } else {
       toast.success(t("userVerified"));
-      navigate(paths.auth.login);
+      navigate(paths.user.root);
       return;
     }
     setIsLoading(false);

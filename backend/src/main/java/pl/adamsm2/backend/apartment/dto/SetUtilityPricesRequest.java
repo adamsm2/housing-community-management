@@ -7,7 +7,6 @@ import jakarta.validation.constraints.Positive;
 public record SetUtilityPricesRequest(
         @Positive double electricityPricePerUnit,
         @Positive double waterPricePerUnit,
-        @Min(1) @Max(12) int month,
         @Min(2000) @Max(2030) int year
 ) {
 }

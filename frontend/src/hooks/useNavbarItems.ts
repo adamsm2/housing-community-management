@@ -19,7 +19,11 @@ const useNavbarItems = () => {
       { name: t("contact"), onClick: () => navigate(paths.contact) },
     ];
     if (user) {
-      items.push({ name: t("userPanel"), onClick: () => navigate(paths.user.root) });
+      if (user.role === "ROLE_ADMIN") {
+        items.push({ name: t("adminPanel"), onClick: () => navigate(paths.admin.root) });
+      } else {
+        items.push({ name: t("userPanel"), onClick: () => navigate(paths.user.root) });
+      }
     }
     return items;
   }, [user, t]);

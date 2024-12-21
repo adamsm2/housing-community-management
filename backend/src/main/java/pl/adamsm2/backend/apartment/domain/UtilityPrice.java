@@ -21,8 +21,6 @@ public class UtilityPrice {
     @ToString.Exclude
     private long id;
 
-    private int month;
-
     private int year;
 
     private double waterPricePerUnit;

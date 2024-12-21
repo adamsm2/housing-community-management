@@ -48,10 +48,11 @@ const UserPanelPresentationSection = () => {
                 >
                   {t("createResidentAccount")}
                 </button>
-                <a href="#"
-                   className=" px-3.5 py-2.5 text-sm font-semibold hover:font-bold text-center">
+                <button
+                  onClick={() => navigate(paths.contact)}
+                  className=" px-3.5 py-2.5 text-sm font-semibold hover:font-bold text-center">
                   {t("findOutMore")}<span aria-hidden="true">→</span>
-                </a>
+                </button>
               </div>
             </dl>
           </div>

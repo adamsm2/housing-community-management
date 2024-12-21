@@ -13,21 +13,17 @@ import pl.adamsm2.backend.user.dto.*;
 import pl.adamsm2.backend.user.service.usecase.UserUseCases;
 
 import java.time.Instant;
-import java.util.Collection;
 import java.util.concurrent.TimeUnit;
 
+import static pl.adamsm2.backend.shared.utils.ApiEndpoints.USER_ENDPOINT;
+
 @RestController
-@RequestMapping("/users")
+@RequestMapping(USER_ENDPOINT)
 @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 class UserController {
 
     private static final String ENDPOINTS_USING_REFRESH_TOKEN = "/users/token/";
     private final UserUseCases userUseCases;
-
-    @GetMapping
-    ResponseEntity<Collection<UserResource>> getUsers() {
-        return ResponseEntity.ok(userUseCases.getUsers());
-    }
 
     @GetMapping("/current")
     ResponseEntity<UserResource> getCurrentUserData() {

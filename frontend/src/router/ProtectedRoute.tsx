@@ -7,10 +7,13 @@ import { selectAuth } from "@/redux/authSlice.ts";
 const ProtectedRoute: FC<PropsWithChildren> = () => {
   const auth = useAppSelector(selectAuth);
 
-  if (auth.accessToken) {
-    return <Outlet />;
-  } else {
+  if (!auth.accessToken) {
     return <Navigate to={paths.auth.login} />;
+  }
+  if (auth.user?.role === "ROLE_ADMIN") {
+    return <Navigate to={paths.admin.root} />;
+  } else {
+    return <Outlet />;
   }
 };
 

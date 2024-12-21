@@ -14,7 +14,7 @@ import java.util.List;
 class CorsConfig {
 
     private static final String MATCH_ALL_PATTERN = "/**";
-    private static final List<String> ALLOWED_METHODS = List.of("GET", "POST", "DELETE", "PATCH", "OPTIONS");
+    private static final List<String> ALLOWED_METHODS = List.of("GET", "POST", "DELETE", "PATCH", "OPTIONS", "PUT");
     private static final List<String> ALLOW_ALL_WILDCARD = List.of("*");
 
     @Value("${app.cors.allowed-origins}")

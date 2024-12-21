@@ -19,6 +19,7 @@ public class MeterReading {
     private long id;
 
     @ManyToOne
+    @JoinColumn(name = "number")
     private Apartment apartment;
 
     @EqualsAndHashCode.Exclude
@@ -31,6 +32,7 @@ public class MeterReading {
 
     private int year;
 
-    @ManyToOne
-    private PaymentStatus paymentStatus;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private EPaymentStatus paymentStatus;
 }

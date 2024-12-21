@@ -7,6 +7,15 @@ import paths from "@/router/paths.ts";
 import RootLayout from "@/components/layout/RootLayout.tsx";
 import HomePage from "@/pages/Home/HomePage.tsx";
 import VerifyEmailPage from "@/pages/Auth/VerifyEmailPage.tsx";
+import MeterReadingsPage from "@/pages/User/MeterReadingsPage.tsx";
+import ApartmentsListPage from "@/pages/Admin/ApartmentsListPage.tsx";
+import AdminPanelNavigation from "@/components/layout/AdminPanelNavigation.tsx";
+import UserPanelNavigation from "@/components/layout/UserPanelNavigation.tsx";
+import CreateApartmentPage from "@/pages/Admin/CreateApartmentPage.tsx";
+import ProtectedAdminRoute from "@/router/ProtectedAdminRoute.tsx";
+import CreateAnnouncementPage from "@/pages/Admin/CreateAnnouncementPage.tsx";
+import SetUtilityPricesPage from "@/pages/Admin/SetUtilityPricesPage.tsx";
+import UpdateMeterReadingsPage from "@/pages/Admin/UpdateMeterReadingsPage.tsx";
 
 const router = createBrowserRouter([
   {
@@ -34,8 +43,32 @@ const router = createBrowserRouter([
           </ProtectedRoute>
         ),
         children: [
-          { index: true, element: <div className="mt-36">User panel</div> },
-          { path: paths.user.meters, element: <div className="mt-36">Meters</div> },
+          {
+            element: <UserPanelNavigation />,
+            children: [
+              { index: true, element: <MeterReadingsPage /> },
+              { path: paths.user.upcomingCharges, element: <div className="mt-36">Meters</div> },
+            ],
+          },
+        ],
+      },
+      {
+        path: paths.admin.root,
+        element: (
+          <ProtectedAdminRoute>
+          </ProtectedAdminRoute>
+        ),
+        children: [
+          {
+            element: <AdminPanelNavigation />,
+            children: [
+              { index: true, element: <ApartmentsListPage /> },
+              { path: paths.admin.createApartment, element: <CreateApartmentPage /> },
+              { path: paths.admin.createAnnouncement, element: <CreateAnnouncementPage /> },
+              { path: paths.admin.setUtilityPrices, element: <SetUtilityPricesPage /> },
+              { path: paths.admin.updateMeterReadings, element: <UpdateMeterReadingsPage /> },
+            ],
+          },
         ],
       },
       { path: paths.root, element: <HomePage /> },

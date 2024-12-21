@@ -15,4 +15,6 @@ public interface ApartmentRepository extends JpaRepository<Apartment, Long> {
 
     List<Apartment> findAllByOwner(User owner);
 
+    boolean existsByNumber(int number);
+
 }

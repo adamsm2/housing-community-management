@@ -1,31 +1,29 @@
 package pl.adamsm2.backend.apartment.web;
 
-import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.web.PageableDefault;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import pl.adamsm2.backend.apartment.dto.ApartmentResource;
-import pl.adamsm2.backend.apartment.dto.ChangeApartmentOwnerRequest;
 import pl.adamsm2.backend.apartment.service.usecase.ApartmentUseCases;
 
 import java.util.List;
 
+import static pl.adamsm2.backend.shared.utils.ApiEndpoints.APARTMENT_ENDPOINT;
+
 @RestController
-@RequestMapping("/apartments")
+@RequestMapping(APARTMENT_ENDPOINT)
 @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 class ApartmentController {
 
     private final ApartmentUseCases apartmentUseCases;
 
-    @GetMapping
-    public ResponseEntity<Page<ApartmentResource>> getApartments(@PageableDefault(sort = "number", direction = Sort.Direction.ASC) Pageable pageable) {
-        return ResponseEntity.ok(apartmentUseCases.getApartments(pageable));
+    @GetMapping("/{number}")
+    public ResponseEntity<ApartmentResource> getApartmentByNumber(@PathVariable int number) {
+        return ResponseEntity.ok(apartmentUseCases.getApartmentByNumber(number));
     }
 
     @GetMapping("/currentUser")
@@ -33,9 +31,4 @@ class ApartmentController {
         return ResponseEntity.ok(apartmentUseCases.getApartmentsForCurrentUser());
     }
 
-    @PostMapping("/owner")
-    public ResponseEntity<Void> changeApartmentOwner(@RequestBody @Valid ChangeApartmentOwnerRequest changeApartmentOwnerRequest) {
-        apartmentUseCases.changeApartmentOwner(changeApartmentOwnerRequest);
-        return ResponseEntity.status(HttpStatus.OK).build();
-    }
 }

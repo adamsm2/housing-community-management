@@ -26,10 +26,10 @@ const ResendVerificationCodeButton = ({ verificationCodeExpirationDate, email }:
     await UserApi.resendVerificationCode(email)
       .then(() => {
         setTimeLeft(601000);
-        toast.success("emailSentSuccessfully");
+        toast.success(t("emailSentSuccessfully"));
       })
       .catch(() => {
-        toast.error("previousCodeHasntExpired");
+        toast.error(t("previousCodeHasntExpired"));
       });
     setIsLoading(false);
   };
