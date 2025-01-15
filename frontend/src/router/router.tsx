@@ -16,6 +16,7 @@ import ProtectedAdminRoute from "@/router/ProtectedAdminRoute.tsx";
 import CreateAnnouncementPage from "@/pages/Admin/CreateAnnouncementPage.tsx";
 import SetUtilityPricesPage from "@/pages/Admin/SetUtilityPricesPage.tsx";
 import UpdateMeterReadingsPage from "@/pages/Admin/UpdateMeterReadingsPage.tsx";
+import AnnouncementsPage from "@/pages/Announcement/AnnouncementsPage.tsx";
 
 const router = createBrowserRouter([
   {
@@ -34,7 +35,7 @@ const router = createBrowserRouter([
           { path: paths.auth.verifyEmail, element: <VerifyEmailPage /> },
         ],
       },
-      { path: paths.announcements, element: <div className="mt-36">Announcement</div> },
+      { path: paths.announcements, element: <AnnouncementsPage /> },
       { path: paths.contact, element: <div className="mt-36">Contact</div> },
       {
         path: paths.user.root,

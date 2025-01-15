@@ -16,7 +16,7 @@ const useNavbarItems = () => {
   const pagesItems = useMemo(() => {
     const items = [
       { name: t("announcements"), onClick: () => navigate(paths.announcements) },
-      { name: t("contact"), onClick: () => navigate(paths.contact) },
+      //{ name: t("contact"), onClick: () => navigate(paths.contact) },
     ];
     if (user) {
       if (user.role === "ROLE_ADMIN") {

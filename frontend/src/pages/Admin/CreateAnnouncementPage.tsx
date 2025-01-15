@@ -1,12 +1,12 @@
 import { useTranslation } from "react-i18next";
-import LoginUserForm from "@/components/forms/LoginUserForm.tsx";
+import CreateAnnouncementForm from "@/components/forms/CreateAnnouncementForm.tsx";
 
 const CreateAnnouncementPage = () => {
   const { t } = useTranslation();
 
   return (
     <div className="px-6 lg:px-8">
-      <LoginUserForm></LoginUserForm>
+      <CreateAnnouncementForm />
     </div>
   );
 };

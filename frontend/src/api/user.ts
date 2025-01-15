@@ -3,6 +3,8 @@ import { VerifyEmailRequest } from "@/api/dto/VerifyEmailRequest.ts";
 
 const userControllerUrl = "/users/";
 const userControllerUrlWithRefreshToken = "/users/token/";
+const adminAnnouncementControllerUrl = "/admin/announcements";
+const announcmentControllerUrl = "users/announcements";
 
 async function registerUser(registerUserRequest: RegisterUserRequest) {
   const response = await apiClient
@@ -43,6 +45,18 @@ async function resendVerificationCode(email: string) {
   await apiClient.post(userControllerUrl + "resend/verification", { email });
 }
 
+async function createAnnouncement(createAnnouncementRequest: CreateAnnouncementRequest) {
+  const response = await apiClient
+    .post(adminAnnouncementControllerUrl, createAnnouncementRequest);
+  return response.data;
+}
+
+async function getAnnouncements() {
+  const response = await apiClient
+    .get(announcmentControllerUrl);
+  return response.data;
+}
+
 
 export default {
   registerUser,
@@ -52,4 +66,6 @@ export default {
   verifyUserEmail,
   getVerificationCodeExpirationDate,
   resendVerificationCode,
+  createAnnouncement,
+  getAnnouncements,
 };

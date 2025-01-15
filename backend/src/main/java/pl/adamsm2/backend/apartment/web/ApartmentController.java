@@ -31,4 +31,5 @@ class ApartmentController {
         return ResponseEntity.ok(apartmentUseCases.getApartmentsForCurrentUser());
     }
 
+
 }

@@ -5,7 +5,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pl.adamsm2.backend.apartment.dto.MeterReadingRequest;
-import pl.adamsm2.backend.apartment.dto.MeterReadingResource;
 import pl.adamsm2.backend.apartment.service.usecase.MeterReadingUseCases;
 
 import static pl.adamsm2.backend.shared.utils.ApiEndpoints.ADMIN_ENDPOINT;
@@ -16,11 +15,6 @@ import static pl.adamsm2.backend.shared.utils.ApiEndpoints.METER_READING_ENDPOIN
 @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 class AdminMeterReadingController {
     private final MeterReadingUseCases meterReadingUseCases;
-
-    @GetMapping("/{apartmentNumber}/{year}/{month}")
-    public ResponseEntity<MeterReadingResource> getMeterReadings(@PathVariable int apartmentNumber, @PathVariable int year, @PathVariable int month) {
-        return ResponseEntity.ok(meterReadingUseCases.getMeterReading(apartmentNumber, year, month));
-    }
 
     @PostMapping()
     public ResponseEntity<Void> createMeterReading(@RequestBody MeterReadingRequest meterReadingRequest) {

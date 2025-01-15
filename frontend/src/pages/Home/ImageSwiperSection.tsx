@@ -10,7 +10,6 @@ import osiedla1 from "@/assets/osiedla1.jpg";
 import osiedla2 from "@/assets/osiedla2.png";
 import osiedla3 from "@/assets/osiedla3.png";
 import osiedla4 from "@/assets/osiedla4.png";
-import osiedla5 from "@/assets/osiedla5.jpg";
 import { useTranslation } from "react-i18next";
 import { useEffect, useRef } from "react";
 
@@ -67,9 +66,6 @@ const ImageSwiperSection = () => {
           </SwiperSlide>
           <SwiperSlide>
             <img src={osiedla4} alt="osiedla4" />
-          </SwiperSlide>
-          <SwiperSlide>
-            <img src={osiedla5} alt="osiedla5" />
           </SwiperSlide>
         </Swiper>
       </div>

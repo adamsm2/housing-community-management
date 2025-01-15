@@ -5,6 +5,7 @@ const adminApartmentControllerUrl = "/admin/apartments";
 const adminUtilityPricesControllerUrl = "/admin/utilityPrices";
 const utilityPricesControllerUrl = "/utilityPrices";
 const adminMeterReadingsControllerUrl = "/admin/meterReadings";
+const meterReadingsControllerUrl = "/meterReadings";
 
 async function getCurrentUserApartments() {
   const response = await apiClient
@@ -46,7 +47,7 @@ async function getUtilityPrices(year: number) {
 
 async function getMeterReadings(apartmentNumber: number, year: number, month: number) {
   const response = await apiClient
-    .get(adminMeterReadingsControllerUrl + "/" + apartmentNumber + "/" + year + "/" + month);
+    .get(meterReadingsControllerUrl + "/" + apartmentNumber + "/" + year + "/" + month);
   return response.data;
 }
 
